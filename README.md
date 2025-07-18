@@ -1,6 +1,6 @@
 # IMDBuddy 🎥
 
-Stop switching tabs! Get instant IMDb ratings while browsing Hotstar, Netflix, Prime Video & other streaming platforms.
+Automatically adds IMDb ratings to every movie and TV show while browsing Hotstar, Netflix, Prime Video & other streaming platforms.
 
 ![Demo Image of IMDBuddy](./images/demo.png)
 
