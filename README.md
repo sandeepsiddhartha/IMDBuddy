@@ -1,4 +1,4 @@
-# IMDBuddy
+# IMDBuddy 🎥
 
 Stop switching tabs! Get instant IMDb ratings while browsing Hotstar, Netflix, Prime Video & other streaming platforms.
 
