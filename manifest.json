@@ -2,7 +2,8 @@
     "manifest_version": 3,
     "name": "IMDBuddy - IMDb Ratings for Hotstar, Netflix, Prime Video & More",
     "short_name": "IMDBuddy",
-    "version": "3.0",
+    "version": "0.0.1",
+    "author": "Pankaj Tanwar",
     "description": "Get instant IMDb ratings while browsing Netflix, Hotstar, Prime Video & other streaming platforms.",
     "permissions": [
         "storage"
@@ -35,8 +36,8 @@
         "default_title": "IMDBuddy - Smart IMDb Ratings"
     },
     "icons": {
-        "16": "icon.png",
-        "48": "icon.png",
-        "128": "icon.png"
+        "16": "images/icon.png",
+        "48": "images/icon.png",
+        "128": "images/icon.png"
     }
 }

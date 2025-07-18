@@ -2,6 +2,8 @@
 
 Stop switching tabs! Get instant IMDb ratings while browsing Hotstar, Netflix, Prime Video & other streaming platforms.
 
+![Demo Image of IMDBuddy](./images/demo.png)
+
 **Supported Platforms**: Hotstar • Netflix • Prime Video • Disney+ ✨
 
 ## 🎛️ Architecture
