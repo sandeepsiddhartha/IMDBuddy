@@ -103,13 +103,6 @@ If you have any questions or concerns about this Privacy Policy or the IMDBuddy 
 - **GitHub**: https://github.com/pankajtanwarbanna/IMDBuddy
 - **Issues**: Please report issues through GitHub Issues
 
-## Consent
-
-By installing and using the IMDBuddy extension, you consent to:
-- The collection and use of information as described in this Privacy Policy
-- The caching of movie/show ratings on your local device
-- Anonymous API requests to fetch rating information
-
 ## Data Minimization
 
 IMDBuddy follows the principle of data minimization:
