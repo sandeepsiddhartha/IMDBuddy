@@ -33,6 +33,7 @@
 // Base Configuration - Core settings for the extension
 const BASE_CONFIG = {
     // Debug settings
+    VERBOSE: true, // Set to false for production
     DEBUG: true, // Set to false for production
     
     // API settings
@@ -56,21 +57,22 @@ const BASE_CONFIG = {
 };
 
 // Debug utility functions
-const DEBUG_LOG = {
-    log: (...args) => {
+const LOGGER = {
+    verbose: (...args) => {
+        if (BASE_CONFIG.VERBOSE) {
+            console.log(`[${BASE_CONFIG.NAME}]`, ...args);
+        }
+    },
+    debug: (...args) => {
         if (BASE_CONFIG.DEBUG) {
             console.log(`[${BASE_CONFIG.NAME}]`, ...args);
         }
     },
     warn: (...args) => {
-        if (BASE_CONFIG.DEBUG) {
-            console.warn(`[${BASE_CONFIG.NAME}]`, ...args);
-        }
+        console.warn(`[${BASE_CONFIG.NAME}]`, ...args);
     },
     error: (...args) => {
-        if (BASE_CONFIG.DEBUG) {
-            console.error(`[${BASE_CONFIG.NAME}]`, ...args);
-        }
+        console.error(`[${BASE_CONFIG.NAME}]`, ...args);
     },
     group: (label) => {
         if (BASE_CONFIG.DEBUG) {
@@ -303,14 +305,14 @@ const Storage = {
      * @returns {Promise<Object>} The stored data or empty object
      */
     async get(key) {
-        DEBUG_LOG.log(`Storage: Getting data for key: ${key}`);
+        LOGGER.debug(`Storage: Getting data for key: ${key}`);
         try {
             const result = await chrome.storage.local.get([key]);
             const data = result[key] ? JSON.parse(result[key]) : {};
-            DEBUG_LOG.log(`Storage: Retrieved data for ${key}:`, Object.keys(data).length, 'entries');
+            LOGGER.verbose(`Storage: Retrieved data for ${key}:`, Object.keys(data).length, 'entries');
             return data;
         } catch (error) {
-            DEBUG_LOG.error('Storage get error:', error);
+            LOGGER.error('Storage get error:', error);
             return {};
         }
     },
@@ -322,12 +324,12 @@ const Storage = {
      * @returns {Promise<void>}
      */
     async set(key, data) {
-        DEBUG_LOG.log(`Storage: Setting data for key: ${key}`, Object.keys(data).length, 'entries');
+        LOGGER.debug(`Storage: Setting data for key: ${key}`, Object.keys(data).length, 'entries');
         try {
             await chrome.storage.local.set({ [key]: JSON.stringify(data) });
-            DEBUG_LOG.log(`Storage: Successfully stored data for ${key}`);
+            LOGGER.verbose(`Storage: Successfully stored data for ${key}`);
         } catch (error) {
-            DEBUG_LOG.error('Storage set error:', error);
+            LOGGER.error('Storage set error:', error);
         }
     }
 };
@@ -351,16 +353,16 @@ const PlatformDetector = {
      * @returns {Object|null} Platform configuration object or null if unsupported
      */
     getCurrentPlatform() {
-        DEBUG_LOG.log(`PlatformDetector: Checking hostname: ${hostname}`);
+        LOGGER.debug(`PlatformDetector: Checking hostname: ${hostname}`);
         
         for (const [key, config] of Object.entries(PLATFORM_CONFIGS)) {
             if (config.hostnames.some(host => hostname.includes(host))) {
-                DEBUG_LOG.log(`PlatformDetector: Detected platform: ${config.name} (${key})`);
+                LOGGER.debug(`PlatformDetector: Detected platform: ${config.name} (${key})`);
                 return { key, config };
             }
         }
         
-        DEBUG_LOG.warn(`PlatformDetector: Unsupported platform: ${hostname}`);
+        LOGGER.warn(`PlatformDetector: Unsupported platform: ${hostname}`);
         return null;
     },
 
@@ -370,7 +372,7 @@ const PlatformDetector = {
      */
     isSupportedPlatform() {
         const isSupported = this.getCurrentPlatform() !== null;
-        DEBUG_LOG.log(`PlatformDetector: Platform supported: ${isSupported}`);
+        LOGGER.debug(`PlatformDetector: Platform supported: ${isSupported}`);
         return isSupported;
     },
 
@@ -404,12 +406,12 @@ const TitleExtractor = {
      * @returns {Object|null} Title data object or null if extraction failed
      */
     extract(element, platformConfig) {
-        DEBUG_LOG.log('TitleExtractor: Attempting extraction from element:', element);
+        LOGGER.verbose('TitleExtractor: Attempting extraction from element:', element);
         const result = platformConfig.extractTitle(element, platformConfig.titleSelectors);
         
         if (result) {
-            DEBUG_LOG.log('TitleExtractor: Successfully extracted:', result);
-            DEBUG_LOG.warn('TitleExtractor: Extraction failed for element');
+            LOGGER.debug('TitleExtractor: Successfully extracted:', result);
+            LOGGER.warn('TitleExtractor: Extraction failed for element');
             this.logExtractionFailure(element, platformConfig);
         }
         
@@ -422,9 +424,9 @@ const TitleExtractor = {
      * @param {Object} platformConfig - Platform configuration
      */
     logExtractionFailure(element, platformConfig) {
-        DEBUG_LOG.group(`Title extraction failed for ${hostname}`);
-        DEBUG_LOG.log('Failed element:', element);
-        DEBUG_LOG.log('Platform config:', platformConfig);
+        LOGGER.group(`Title extraction failed for ${hostname}`);
+        LOGGER.debug('Failed element:', element);
+        LOGGER.verbose('Platform config:', platformConfig);
         
         // Platform-specific debug logging
         if (hostname.includes('hotstar.com') || hostname.includes('disneyplus.com')) {
@@ -433,7 +435,7 @@ const TitleExtractor = {
             this.logNetflixDebugInfo(element);
         }
         
-        DEBUG_LOG.groupEnd();
+        LOGGER.groupEnd();
     },
 
     /**
@@ -441,11 +443,11 @@ const TitleExtractor = {
      * @param {HTMLElement} element - The DOM element to analyze
      */
     logHotstarDebugInfo(element) {
-        DEBUG_LOG.log('=== HOTSTAR DEBUG INFO ===');
-        DEBUG_LOG.log('Available aria-label elements:', element.querySelectorAll('[aria-label]'));
-        DEBUG_LOG.log('Available img elements with alt:', element.querySelectorAll('img[alt]'));
-        DEBUG_LOG.log('Available text content:', element.textContent);
-        DEBUG_LOG.log('Element classes:', element.className);
+        LOGGER.verbose('=== HOTSTAR DEBUG INFO ===');
+        LOGGER.verbose('Available aria-label elements:', element.querySelectorAll('[aria-label]'));
+        LOGGER.verbose('Available img elements with alt:', element.querySelectorAll('img[alt]'));
+        LOGGER.verbose('Available text content:', element.textContent);
+        LOGGER.verbose('Element classes:', element.className);
     },
 
     /**
@@ -453,9 +455,9 @@ const TitleExtractor = {
      * @param {HTMLElement} element - The DOM element to analyze
      */
     logNetflixDebugInfo(element) {
-        DEBUG_LOG.log('=== NETFLIX DEBUG INFO ===');
-        DEBUG_LOG.log('Available aria-label links:', element.querySelectorAll('a[aria-label]'));
-        DEBUG_LOG.log('Available fallback text:', element.querySelectorAll('.fallback-text'));
+        LOGGER.verbose('=== NETFLIX DEBUG INFO ===');
+        LOGGER.verbose('Available aria-label links:', element.querySelectorAll('a[aria-label]'));
+        LOGGER.verbose('Available fallback text:', element.querySelectorAll('.fallback-text'));
         DEBUG_LOG.log('Element structure:', element.innerHTML.substring(0, 500));
     }
 };
@@ -709,14 +711,14 @@ const ApiService = {
      * Loads cache from storage and cleans expired entries
      */
     async init() {
-        DEBUG_LOG.log('ApiService: Initializing...');
+        LOGGER.debug('ApiService: Initializing...');
         try {
             this.cache = await Storage.get(BASE_CONFIG.STORAGE_KEY);
-            DEBUG_LOG.log('ApiService: Cache loaded, entries:', Object.keys(this.cache).length);
+            LOGGER.debug('ApiService: Cache loaded, entries:', Object.keys(this.cache).length);
             await this.cleanExpiredEntries();
-            DEBUG_LOG.log('ApiService: Initialization complete');
+            LOGGER.debug('ApiService: Initialization complete');
         } catch (error) {
-            DEBUG_LOG.error('ApiService: Initialization failed:', error);
+            LOGGER.error('ApiService: Initialization failed:', error);
             throw error;
         }
     },
@@ -726,7 +728,8 @@ const ApiService = {
      * Removes entries older than CACHE_MAX_AGE
      */
     async cleanExpiredEntries() {
-        DEBUG_LOG.log('ApiService: Cleaning expired cache entries...');
+        LOGGER.group('Cache Cleanup');
+        LOGGER.debug('Cleaning expired cache entries...');
         const now = Date.now();
         let hasExpiredEntries = false;
         let expiredCount = 0;
@@ -740,10 +743,11 @@ const ApiService = {
         }
 
         if (hasExpiredEntries) {
-            DEBUG_LOG.log(`ApiService: Cleaned ${expiredCount} expired entries`);
+            LOGGER.debug(`Cleaned ${expiredCount} expired entries`);
             await this.saveCache();
-            DEBUG_LOG.log('ApiService: No expired entries found');
+            LOGGER.verbose('No expired entries found');
         }
+        LOGGER.groupEnd();
     },
 
     /**
@@ -770,28 +774,28 @@ const ApiService = {
      * @returns {Promise<Object|null>} Rating data or null
      */
     async getRating(titleData) {
-        DEBUG_LOG.log('ApiService: getRating called with:', titleData);
+        LOGGER.debug('ApiService: getRating called with:', titleData);
         
         if (!titleData || !titleData.title) {
-            DEBUG_LOG.warn('ApiService: Invalid titleData provided');
+            LOGGER.warn('ApiService: Invalid titleData provided');
             return null;
         }
 
         const { title, type } = titleData;
         const cacheKey = `${title.toLowerCase()}_${type || 'unknown'}`;
-        DEBUG_LOG.log(`ApiService: Cache key: ${cacheKey}`);
+        LOGGER.verbose(`ApiService: Cache key: ${cacheKey}`);
 
         // Check cache first
         const cachedResult = this.cache[cacheKey];
         if (cachedResult && this.isCacheEntryValid(cachedResult)) {
-            DEBUG_LOG.log('ApiService: Cache hit for:', title);
+            LOGGER.verbose('ApiService: Cache hit for:', title);
             return cachedResult.data;
         }
-        DEBUG_LOG.log('ApiService: Cache miss for:', title);
+        LOGGER.verbose('ApiService: Cache miss for:', title);
 
         // Add to request queue
         return new Promise((resolve) => {
-            DEBUG_LOG.log('ApiService: Adding to request queue:', title);
+            LOGGER.verbose('ApiService: Adding to request queue:', title);
             this.requestQueue.push({ title, type, cacheKey, resolve });
             this.processQueue();
         });
@@ -801,16 +805,16 @@ const ApiService = {
      * Process the request queue with rate limiting
      */
     async processQueue() {
-        DEBUG_LOG.log(`ApiService: Processing queue (${this.requestQueue.length} pending, ${this.activeRequests} active)`);
+        LOGGER.verbose(`ApiService: Processing queue (${this.requestQueue.length} pending, ${this.activeRequests} active)`);
         
         if (this.activeRequests >= BASE_CONFIG.MAX_CONCURRENT_REQUESTS || this.requestQueue.length === 0) {
-            DEBUG_LOG.log('ApiService: Queue processing skipped - rate limit or empty queue');
+            LOGGER.verbose('ApiService: Queue processing skipped - rate limit or empty queue');
             return;
         }
 
         const request = this.requestQueue.shift();
         this.activeRequests++;
-        DEBUG_LOG.log(`ApiService: Processing request for: ${request.title}`);
+        LOGGER.debug(`ApiService: Processing request for: ${request.title}`);
 
         try {
             await this.processRequest(request);
@@ -826,12 +830,12 @@ const ApiService = {
      * @param {Object} request - Request object containing title, type, cacheKey, resolve
      */
     async processRequest({ title, type, cacheKey, resolve }) {
-        DEBUG_LOG.group(`Processing API request: ${title}`);
+        LOGGER.group(`Processing API request: ${title}`);
         try {
             await this.waitForRateLimit();
             
             const result = await this.fetchFromApi(title, type, cacheKey);
-            DEBUG_LOG.log('API result:', result);
+            LOGGER.debug('API result:', result);
             
             // Cache the result
             this.cache[cacheKey] = {
@@ -839,14 +843,14 @@ const ApiService = {
                 timestamp: Date.now()
             };
             await this.saveCache();
-            DEBUG_LOG.log('Result cached successfully');
+            LOGGER.verbose('Result cached successfully');
             
             resolve(result);
         } catch (error) {
-            DEBUG_LOG.error('API request failed:', error);
+            LOGGER.error('API request failed:', error);
             resolve(null);
         } finally {
-            DEBUG_LOG.groupEnd();
+            LOGGER.groupEnd();
         }
     },
 
@@ -880,32 +884,32 @@ const ApiService = {
      * @returns {Promise<Object|null>} Rating data or null
      */
     async fetchFromApi(title, expectedType, cacheKey, retryCount = 0) {
-        DEBUG_LOG.log(`Fetching from API: ${title} (attempt ${retryCount + 1})`);
+        LOGGER.debug(`Fetching from API: ${title} (attempt ${retryCount + 1})`);
         try {
             const url = `${BASE_CONFIG.API_URL}?query=${encodeURIComponent(title)}`;
-            DEBUG_LOG.log('API URL:', url);
+            LOGGER.verbose('API URL:', url);
             
             const response = await fetch(url);
-            DEBUG_LOG.log('API response status:', response.status);
+            LOGGER.verbose('API response status:', response.status);
             
             if (!response.ok) {
                 throw new Error(`HTTP ${response.status}: ${response.statusText}`);
             }
             
             const data = await response.json();
-            DEBUG_LOG.log('API response data:', data);
+            LOGGER.verbose('API response data:', data);
             
             if (!data.results || data.results.length === 0) {
-                DEBUG_LOG.warn('No results found for:', title);
+                LOGGER.warn('No results found for:', title);
                 return null;
             }
             
             // Use fuzzy matching to find the best result
             const bestMatch = FuzzyMatcher.findBestMatch(title, data.results, expectedType);
-            DEBUG_LOG.log('Best match found:', bestMatch);
+            LOGGER.debug('Best match found:', bestMatch);
             
             if (!bestMatch) {
-                DEBUG_LOG.warn('No suitable match found for:', title);
+                LOGGER.warn('No suitable match found for:', title);
                 return null;
             }
             
@@ -915,17 +919,17 @@ const ApiService = {
                 title: bestMatch.title,
                 year: bestMatch.year
             };
-            DEBUG_LOG.log('Formatted result:', result);
+            LOGGER.debug('Formatted result:', result);
             
             return result;
             
         } catch (error) {
-            DEBUG_LOG.error(`API Error (attempt ${retryCount + 1}):`, error);
+            LOGGER.error(`API Error (attempt ${retryCount + 1}):`, error);
             
             // Retry logic for temporary failures
             if (retryCount < 2 && (error.message.includes('429') || error.message.includes('500'))) {
                 const backoffDelay = Math.pow(2, retryCount) * 1000; // Exponential backoff
-                DEBUG_LOG.log(`Retrying in ${backoffDelay}ms...`);
+                LOGGER.debug(`Retrying in ${backoffDelay}ms...`);
                 await new Promise(resolve => setTimeout(resolve, backoffDelay));
                 return this.fetchFromApi(title, expectedType, cacheKey, retryCount + 1);
             }
@@ -1089,36 +1093,34 @@ const StreamingRatings = {
      * Sets up platform detection, API service, and DOM observation
      */
     async init() {
-        DEBUG_LOG.log('StreamingRatings: Starting initialization...');
+        LOGGER.group('StreamingRatings Initialization');
+        LOGGER.debug('Starting initialization...');
         
-        // Detect current platform
-        this.platform = PlatformDetector.getCurrentPlatform();
-        if (!this.platform) {
-            DEBUG_LOG.warn('StreamingRatings: Unsupported streaming platform, extension not loaded');
+        // Check if platform is supported
+        const platformData = PlatformDetector.getCurrentPlatform();
+        if (!platformData) {
+            LOGGER.warn('Unsupported platform, exiting');
+            LOGGER.groupEnd();
             return;
         }
-
-        DEBUG_LOG.log(`StreamingRatings: Initialized for ${this.platform.config.name}`);
         
+        this.platform = platformData;
+        LOGGER.debug('Platform detected:', this.platform.config.name);
+        
+        // Initialize API service
         try {
-            // Initialize API service
             await ApiService.init();
-            DEBUG_LOG.log('StreamingRatings: API service initialized');
-            
-            // Set up DOM observation
-            this.setupObserver();
-            DEBUG_LOG.log('StreamingRatings: Observer set up');
-            
-            // Process existing cards after a delay
-            setTimeout(() => {
-                DEBUG_LOG.log('StreamingRatings: Processing existing cards...');
-                this.processExistingCards();
-            }, BASE_CONFIG.OBSERVER_DELAY);
-            
-            DEBUG_LOG.log('StreamingRatings: Initialization complete');
+            LOGGER.debug('API service initialized');
         } catch (error) {
-            DEBUG_LOG.error('StreamingRatings: Initialization failed:', error);
+            LOGGER.error('Failed to initialize API service:', error);
+            LOGGER.groupEnd();
+            return;
         }
+        
+        // Start observing for cards
+        this.startObserver();
+        LOGGER.debug('Initialization complete');
+        LOGGER.groupEnd();
     },
 
     /**
@@ -1126,13 +1128,13 @@ const StreamingRatings = {
      * Uses debouncing to avoid excessive processing
      */
     setupObserver() {
-        DEBUG_LOG.log('StreamingRatings: Setting up MutationObserver');
+        LOGGER.log('StreamingRatings: Setting up MutationObserver');
         
         const observer = new MutationObserver((mutations) => {
-            DEBUG_LOG.log(`StreamingRatings: DOM mutations detected: ${mutations.length}`);
+            LOGGER.log(`StreamingRatings: DOM mutations detected: ${mutations.length}`);
             clearTimeout(this.debounceTimer);
             this.debounceTimer = setTimeout(() => {
-                DEBUG_LOG.log('StreamingRatings: Processing cards after DOM change');
+                LOGGER.log('StreamingRatings: Processing cards after DOM change');
                 this.processExistingCards();
             }, 1000);
         });
@@ -1142,7 +1144,7 @@ const StreamingRatings = {
             subtree: true 
         });
         
-        DEBUG_LOG.log('StreamingRatings: MutationObserver active');
+        LOGGER.log('StreamingRatings: MutationObserver active');
     },
 
     /**
@@ -1150,12 +1152,12 @@ const StreamingRatings = {
      * Finds cards and processes them in batches
      */
     async processExistingCards() {
-        DEBUG_LOG.log('StreamingRatings: Looking for cards to process...');
+        LOGGER.log('StreamingRatings: Processing existing cards...');
         const cards = this.findCards();
-        DEBUG_LOG.log(`StreamingRatings: Found ${cards.length} cards to process`);
+        LOGGER.log(`StreamingRatings: Found ${cards.length} cards to process`);
         
         if (cards.length === 0) {
-            DEBUG_LOG.log('StreamingRatings: No cards found');
+            LOGGER.log('StreamingRatings: No cards found');
             return;
         }
         
@@ -1163,7 +1165,7 @@ const StreamingRatings = {
         const batchSize = 10;
         for (let i = 0; i < cards.length; i += batchSize) {
             const batch = cards.slice(i, i + batchSize);
-            DEBUG_LOG.log(`StreamingRatings: Processing batch ${Math.floor(i/batchSize) + 1} (${batch.length} cards)`);
+            LOGGER.log(`StreamingRatings: Processing batch ${Math.floor(i/batchSize) + 1}/${Math.ceil(cards.length/batchSize)} (${batch.length} cards)`);
             await this.processBatch(batch);
             
             // Small delay between batches
@@ -1171,7 +1173,7 @@ const StreamingRatings = {
                 await new Promise(resolve => setTimeout(resolve, 500));
             }
         }
-        DEBUG_LOG.log('StreamingRatings: Finished processing all cards');
+        LOGGER.log('StreamingRatings: Finished processing all cards');
     },
 
     /**
