@@ -13,13 +13,16 @@ const PlatformDetector = {
      */
     getCurrentPlatform() {
         const hostname = window.location.hostname;
+        DEBUG_LOG.log(`PlatformDetector: Checking hostname: ${hostname}`);
         
         for (const [key, config] of Object.entries(PLATFORM_CONFIGS)) {
             if (config.hostnames.some(host => hostname.includes(host))) {
+                DEBUG_LOG.log(`PlatformDetector: Detected platform: ${config.name} (${key})`);
                 return { key, config };
             }
         }
         
+        DEBUG_LOG.warn(`PlatformDetector: Unsupported platform: ${hostname}`);
         return null;
     },
 
@@ -28,7 +31,9 @@ const PlatformDetector = {
      * @returns {boolean} True if platform is supported
      */
     isSupportedPlatform() {
-        return this.getCurrentPlatform() !== null;
+        const isSupported = this.getCurrentPlatform() !== null;
+        DEBUG_LOG.log(`PlatformDetector: Platform supported: ${isSupported}`);
+        return isSupported;
     },
 
     /**

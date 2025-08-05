@@ -14,10 +14,13 @@ const TitleExtractor = {
      * @returns {Object|null} Title data object or null if extraction failed
      */
     extract(element, platformConfig) {
+        DEBUG_LOG.log('TitleExtractor: Attempting extraction from element:', element);
         const result = platformConfig.extractTitle(element, platformConfig.titleSelectors);
         
-        // Debug logging when extraction fails
-        if (!result) {
+        if (result) {
+            DEBUG_LOG.log('TitleExtractor: Successfully extracted:', result);
+        } else {
+            DEBUG_LOG.warn('TitleExtractor: Extraction failed for element');
             this.logExtractionFailure(element, platformConfig);
         }
         
@@ -31,7 +34,9 @@ const TitleExtractor = {
      */
     logExtractionFailure(element, platformConfig) {
         const hostname = window.location.hostname;
-        console.log(`Title extraction failed for ${hostname}:`, element);
+        DEBUG_LOG.group(`Title extraction failed for ${hostname}`);
+        DEBUG_LOG.log('Failed element:', element);
+        DEBUG_LOG.log('Platform config:', platformConfig);
         
         // Platform-specific debug logging
         if (hostname.includes('hotstar.com') || hostname.includes('disneyplus.com')) {
@@ -39,6 +44,8 @@ const TitleExtractor = {
         } else if (hostname.includes('netflix.com')) {
             this.logNetflixDebugInfo(element);
         }
+        
+        DEBUG_LOG.groupEnd();
     },
 
     /**
@@ -46,32 +53,11 @@ const TitleExtractor = {
      * @param {HTMLElement} element - The DOM element to analyze
      */
     logHotstarDebugInfo(element) {
-        console.log('=== HOTSTAR DEBUG INFO ===');
-        console.log('Available aria-label elements:', element.querySelectorAll('[aria-label]'));
-        console.log('Available img elements with alt:', element.querySelectorAll('img[alt]'));
-        console.log('Available elements with title attr:', element.querySelectorAll('[title]'));
-        console.log('Available h3/h4 elements:', element.querySelectorAll('h3, h4'));
-        console.log('Available a elements with aria-label:', element.querySelectorAll('a[aria-label]'));
-        
-        // Log all text content
-        const allElements = element.querySelectorAll('*');
-        console.log('All elements with text content:');
-        allElements.forEach(el => {
-            const text = el.textContent?.trim();
-            if (text && text.length > 2 && text.length < 100) {
-                console.log(`${el.tagName}: "${text}"`);
-            }
-            if (el.hasAttribute('aria-label')) {
-                console.log(`${el.tagName} aria-label: "${el.getAttribute('aria-label')}"`);
-            }
-            if (el.hasAttribute('alt')) {
-                console.log(`${el.tagName} alt: "${el.getAttribute('alt')}"`);
-            }
-            if (el.hasAttribute('title')) {
-                console.log(`${el.tagName} title: "${el.getAttribute('title')}"`);
-            }
-        });
-        console.log('=== END HOTSTAR DEBUG ===');
+        DEBUG_LOG.log('=== HOTSTAR DEBUG INFO ===');
+        DEBUG_LOG.log('Available aria-label elements:', element.querySelectorAll('[aria-label]'));
+        DEBUG_LOG.log('Available img elements with alt:', element.querySelectorAll('img[alt]'));
+        DEBUG_LOG.log('Available text content:', element.textContent);
+        DEBUG_LOG.log('Element classes:', element.className);
     },
 
     /**
@@ -79,8 +65,10 @@ const TitleExtractor = {
      * @param {HTMLElement} element - The DOM element to analyze
      */
     logNetflixDebugInfo(element) {
-        console.log('Available aria-label links:', element.querySelectorAll('a[aria-label]'));
-        console.log('Available fallback text:', element.querySelectorAll('.fallback-text'));
+        DEBUG_LOG.log('=== NETFLIX DEBUG INFO ===');
+        DEBUG_LOG.log('Available aria-label links:', element.querySelectorAll('a[aria-label]'));
+        DEBUG_LOG.log('Available fallback text:', element.querySelectorAll('.fallback-text'));
+        DEBUG_LOG.log('Element structure:', element.innerHTML.substring(0, 500));
     }
 };
 

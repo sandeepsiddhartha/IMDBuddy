@@ -13,11 +13,14 @@ const Storage = {
      * @returns {Promise<Object>} The stored data or empty object
      */
     async get(key) {
+        DEBUG_LOG.log(`Storage: Getting data for key: ${key}`);
         try {
             const result = await chrome.storage.local.get([key]);
-            return result[key] ? JSON.parse(result[key]) : {};
+            const data = result[key] ? JSON.parse(result[key]) : {};
+            DEBUG_LOG.log(`Storage: Retrieved data for ${key}:`, Object.keys(data).length, 'entries');
+            return data;
         } catch (error) {
-            console.error('Storage get error:', error);
+            DEBUG_LOG.error('Storage get error:', error);
             return {};
         }
     },
@@ -29,10 +32,12 @@ const Storage = {
      * @returns {Promise<void>}
      */
     async set(key, data) {
+        DEBUG_LOG.log(`Storage: Setting data for key: ${key}`, Object.keys(data).length, 'entries');
         try {
             await chrome.storage.local.set({ [key]: JSON.stringify(data) });
+            DEBUG_LOG.log(`Storage: Successfully stored data for ${key}`);
         } catch (error) {
-            console.error('Storage set error:', error);
+            DEBUG_LOG.error('Storage set error:', error);
         }
     }
 };

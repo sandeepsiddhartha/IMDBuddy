@@ -16,23 +16,36 @@ const StreamingRatings = {
      * Sets up platform detection, API service, and DOM observation
      */
     async init() {
+        DEBUG_LOG.log('StreamingRatings: Starting initialization...');
+        
         // Detect current platform
         this.platform = PlatformDetector.getCurrentPlatform();
         if (!this.platform) {
-            console.log('IMDBuddy: Unsupported streaming platform');
+            DEBUG_LOG.warn('StreamingRatings: Unsupported streaming platform, extension not loaded');
             return;
         }
 
-        console.log(`IMDBuddy: Initialized for ${this.platform.config.name}`);
+        DEBUG_LOG.log(`StreamingRatings: Initialized for ${this.platform.config.name}`);
         
-        // Initialize API service
-        await ApiService.init();
-        
-        // Set up DOM observation
-        this.setupObserver();
-        
-        // Process existing cards after a delay
-        setTimeout(() => this.processExistingCards(), BASE_CONFIG.OBSERVER_DELAY);
+        try {
+            // Initialize API service
+            await ApiService.init();
+            DEBUG_LOG.log('StreamingRatings: API service initialized');
+            
+            // Set up DOM observation
+            this.setupObserver();
+            DEBUG_LOG.log('StreamingRatings: Observer set up');
+            
+            // Process existing cards after a delay
+            setTimeout(() => {
+                DEBUG_LOG.log('StreamingRatings: Processing existing cards...');
+                this.processExistingCards();
+            }, BASE_CONFIG.OBSERVER_DELAY);
+            
+            DEBUG_LOG.log('StreamingRatings: Initialization complete');
+        } catch (error) {
+            DEBUG_LOG.error('StreamingRatings: Initialization failed:', error);
+        }
     },
 
     /**
@@ -40,15 +53,23 @@ const StreamingRatings = {
      * Uses debouncing to avoid excessive processing
      */
     setupObserver() {
-        const observer = new MutationObserver(() => {
+        DEBUG_LOG.log('StreamingRatings: Setting up MutationObserver');
+        
+        const observer = new MutationObserver((mutations) => {
+            DEBUG_LOG.log(`StreamingRatings: DOM mutations detected: ${mutations.length}`);
             clearTimeout(this.debounceTimer);
-            this.debounceTimer = setTimeout(() => this.processExistingCards(), 1000);
+            this.debounceTimer = setTimeout(() => {
+                DEBUG_LOG.log('StreamingRatings: Processing cards after DOM change');
+                this.processExistingCards();
+            }, 1000);
         });
 
         observer.observe(document.body, { 
             childList: true, 
             subtree: true 
         });
+        
+        DEBUG_LOG.log('StreamingRatings: MutationObserver active');
     },
 
     /**
@@ -56,15 +77,20 @@ const StreamingRatings = {
      * Finds cards and processes them in batches
      */
     async processExistingCards() {
+        DEBUG_LOG.log('StreamingRatings: Looking for cards to process...');
         const cards = this.findCards();
-        console.log(`IMDBuddy: Found ${cards.length} cards to process`);
+        DEBUG_LOG.log(`StreamingRatings: Found ${cards.length} cards to process`);
         
-        if (cards.length === 0) return;
+        if (cards.length === 0) {
+            DEBUG_LOG.log('StreamingRatings: No cards found');
+            return;
+        }
         
         // Process cards in batches to avoid overwhelming the API
         const batchSize = 10;
         for (let i = 0; i < cards.length; i += batchSize) {
             const batch = cards.slice(i, i + batchSize);
+            DEBUG_LOG.log(`StreamingRatings: Processing batch ${Math.floor(i/batchSize) + 1} (${batch.length} cards)`);
             await this.processBatch(batch);
             
             // Small delay between batches
@@ -72,6 +98,7 @@ const StreamingRatings = {
                 await new Promise(resolve => setTimeout(resolve, 500));
             }
         }
+        DEBUG_LOG.log('StreamingRatings: Finished processing all cards');
     },
 
     /**

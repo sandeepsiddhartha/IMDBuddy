@@ -8,6 +8,9 @@
 
 // Base Configuration - Core settings for the extension
 const BASE_CONFIG = {
+    // Debug settings
+    DEBUG: true, // Set to false for production
+    
     // API settings
     API_URL: 'https://api.imdbapi.dev/search/titles',
     REQUEST_DELAY: 110, // Slightly over 100ms to stay safely under 10 req/sec
@@ -28,9 +31,39 @@ const BASE_CONFIG = {
     NAME: 'IMDBuddy'
 };
 
+// Debug utility functions
+const DEBUG_LOG = {
+    log: (...args) => {
+        if (BASE_CONFIG.DEBUG) {
+            console.log(`[${BASE_CONFIG.NAME}]`, ...args);
+        }
+    },
+    warn: (...args) => {
+        if (BASE_CONFIG.DEBUG) {
+            console.warn(`[${BASE_CONFIG.NAME}]`, ...args);
+        }
+    },
+    error: (...args) => {
+        if (BASE_CONFIG.DEBUG) {
+            console.error(`[${BASE_CONFIG.NAME}]`, ...args);
+        }
+    },
+    group: (label) => {
+        if (BASE_CONFIG.DEBUG) {
+            console.group(`[${BASE_CONFIG.NAME}] ${label}`);
+        }
+    },
+    groupEnd: () => {
+        if (BASE_CONFIG.DEBUG) {
+            console.groupEnd();
+        }
+    }
+};
+
 // Export for use in other modules
 if (typeof module !== 'undefined' && module.exports) {
-    module.exports = { BASE_CONFIG };
+    module.exports = { BASE_CONFIG, DEBUG_LOG };
 } else {
     window.BASE_CONFIG = BASE_CONFIG;
+    window.DEBUG_LOG = DEBUG_LOG;
 }

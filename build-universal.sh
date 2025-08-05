@@ -57,8 +57,12 @@ print_success "Manifests generated successfully"
 # Build Chrome Extension
 print_status "Building Chrome extension..."
 
-# Copy shared content script
-cp "$SHARED_DIR/content.js" "$CHROME_DIR/"
+# Build content script from modular sources
+print_status "Building content script from modular sources..."
+if ! ./build-tools/build-content-script.sh "$CHROME_DIR/content.js"; then
+    print_error "Failed to build content script"
+    exit 1
+fi
 
 # Copy shared UI files
 cp "$SHARED_DIR/ui/styles.css" "$CHROME_DIR/"
@@ -80,8 +84,12 @@ print_success "Chrome extension built in $CHROME_DIR/"
 # Build Safari Extension
 print_status "Building Safari extension..."
 
-# Copy shared content script
-cp "$SHARED_DIR/content.js" "$SAFARI_DIR/"
+# Build content script from modular sources
+print_status "Building Safari content script from modular sources..."
+if ! ./build-tools/build-content-script.sh "$SAFARI_DIR/content.js"; then
+    print_error "Failed to build Safari content script"
+    exit 1
+fi
 
 # Copy shared UI files
 cp "$SHARED_DIR/ui/styles.css" "$SAFARI_DIR/"

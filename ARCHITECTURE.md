@@ -10,7 +10,7 @@ IMDBuddy has been refactored into a modular, maintainable architecture that maxi
 IMDBuddy/
 ├── shared/                          # 🆕 Shared code for all platforms
 │   ├── core/                        # Core extension modules
-│   │   ├── config.js               # Base configuration
+│   │   ├── config.js               # Base configuration & debug system
 │   │   ├── platform-detector.js    # Platform detection
 │   │   ├── storage.js              # Cross-browser storage
 │   │   ├── title-extractor.js      # Title extraction with debugging
@@ -23,19 +23,30 @@ IMDBuddy/
 │   ├── ui/                         # Shared UI components
 │   │   ├── styles.css              # Extension styles
 │   │   └── popup.html              # Extension popup
-│   ├── assets/                     # Shared assets
-│   │   └── images/                 # Icons and images
-│   └── content.js                  # 🆕 Unified content script
-├── chrome-extension/               # Chrome-specific files (built)
-├── safari-extension/               # Safari-specific files (built)
+│   └── assets/                     # Shared assets
+│       └── images/                 # Icons and images
+├── build-tools/                    # 🆕 Build utilities
+│   ├── build-content-script.sh     # 🆕 Modular content script builder
+│   ├── generate-manifests.sh       # Manifest generation
+│   ├── safari-compatibility.js     # Safari compatibility layer
+│   └── verify-safari-setup.sh      # Safari setup verification
+├── dist/                           # 🆕 Build outputs
+│   ├── chrome-extension/           # Built Chrome extension
+│   └── safari-extension/           # Built Safari extension
 ├── Safari-App/                     # Safari Xcode project
 ├── build-universal.sh              # 🆕 Universal build script
-├── build-safari.sh                 # Updated Safari build script
 ├── shared-config.json              # Shared manifest configuration
-└── HOW-TO-ADD-STREAMING-SERVICE.md # 🆕 Comprehensive guide
+├── DEBUGGING.md                    # 🆕 Debug guide
+└── HOW-TO-ADD-STREAMING-SERVICE.md # 🆕 Platform addition guide
 ```
 
-## 🏗️ Architecture Benefits
+## 🏗️ Build System Architecture
+
+### ✅ Modular Content Script Building
+- **No more duplicated code**: `shared/content.js` eliminated
+- **True source modules**: Built from individual `shared/core/` files
+- **Consistent debug logging**: All modules include comprehensive debugging
+- **Single build command**: `./build-universal.sh` builds both platforms
 
 ### ✅ Code Reuse
 - **99% code sharing** between Chrome and Safari extensions
@@ -81,6 +92,11 @@ IMDBuddy/
 - Uses **shared source code** for maximum consistency
 - Generates **platform-specific** manifests
 - Includes **verification** of build outputs
+
+### Browser-Specific Builds
+```bash
+./build-safari.sh          # Safari only
+```
 
 ## 🎯 Adding New Streaming Platforms
 
