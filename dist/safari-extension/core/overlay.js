@@ -14,8 +14,10 @@ const Overlay = {
     create(rating) {
         const overlay = document.createElement('div');
         overlay.className = 'imdb-rating-overlay';
-        overlay.setAttribute('role', 'img');
-        overlay.setAttribute('aria-label', `IMDb rating: ${rating.score} out of 10, ${rating.votes} votes`);
+        overlay.setAttribute('role', 'button');
+        overlay.setAttribute('aria-label', `IMDb rating: ${rating.score} out of 10, ${rating.votes} votes. Click to view on IMDb.`);
+        overlay.setAttribute('tabindex', '0');
+        overlay.style.cursor = 'pointer';
         
         overlay.innerHTML = `
             <div class="imdb-rating-content">
@@ -24,6 +26,36 @@ const Overlay = {
                 <div class="imdb-votes">${rating.votes}</div>
             </div>
         `;
+        
+        // Add click handler to open IMDB page
+        const handleClick = (event) => {
+            event.preventDefault();
+            event.stopPropagation();
+            if (rating.url) {
+                window.open(rating.url, '_blank', 'noopener,noreferrer');
+                LOGGER.debug('IMDBuddy: Overlay#create: Opened IMDB page:', rating.url);
+            }
+        };
+        
+        // Add both click and keyboard event handlers
+        overlay.addEventListener('click', handleClick);
+        overlay.addEventListener('keydown', (event) => {
+            if (event.key === 'Enter' || event.key === ' ') {
+                event.preventDefault();
+                handleClick(event);
+            }
+        });
+        
+        // Add visual feedback on hover
+        overlay.addEventListener('mouseenter', () => {
+            overlay.style.opacity = '0.9';
+            overlay.style.transform = 'scale(1.02)';
+        });
+        
+        overlay.addEventListener('mouseleave', () => {
+            overlay.style.opacity = '1';
+            overlay.style.transform = 'scale(1)';
+        });
         
         return overlay;
     },
@@ -45,7 +77,7 @@ const Overlay = {
             // Debug logging
             this.logOverlayPlacement(container, platformConfig);
         } else {
-            console.warn('No suitable container found for overlay:', element);
+            LOGGER.warn('IMDBuddy: Overlay#addTo: No suitable container found for overlay:', element);
         }
     },
 
@@ -76,15 +108,7 @@ const Overlay = {
      * @param {Object} platformConfig - Platform configuration
      */
     logOverlayPlacement(container, platformConfig) {
-        const hostname = window.location.hostname;
-        
-        if (hostname.includes('hotstar.com') || hostname.includes('disneyplus.com')) {
-            console.log('Added overlay to Hotstar container:', container);
-        } else if (hostname.includes('netflix.com')) {
-            console.log('Added overlay to Netflix container:', container);
-        } else if (hostname.includes('primevideo.com') || hostname.includes('amazon.com')) {
-            console.log('Added overlay to Prime Video container:', container);
-        }
+        LOGGER.verbose('IMDBuddy: Overlay#logOverlayPlacement: Added clickable overlay to container:', container, 'Platform:', platformConfig.name);
     },
 
     /**
