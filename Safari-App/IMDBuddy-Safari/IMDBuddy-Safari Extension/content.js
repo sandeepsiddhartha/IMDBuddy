@@ -131,7 +131,7 @@
 
         prime: {
             name: 'Prime Video',
-            hostnames: ['primevideo.com'],
+            hostnames: ['primevideo.com', 'amazon.com'],
             cardSelectors: ['.tst-hover-container', '.av-card-container'],
             titleSelectors: ['[data-automation-id="title"]', '.av-card-title'],
             imageContainerSelectors: ['.av-card-image', '.tst-packshot-image'],
