@@ -170,19 +170,20 @@ const StreamingRatings = {
      */
     async processCard(element, titleData) {
         try {
-            console.log('IMDBuddy: Processing card with title:', titleData.title);
+            LOGGER.debug('IMDBuddy: Processing card with title:', titleData.title);
             
             const rating = await ApiService.getRating(titleData);
-            
+            LOGGER.debug('IMDBuddy: Received rating:', rating);
+
             if (rating) {
                 const overlay = Overlay.create(rating);
                 Overlay.addTo(element, overlay, this.platform.config);
-                console.log('IMDBuddy: Added rating overlay for:', titleData.title);
+                LOGGER.verbose('IMDBuddy: Added rating overlay for:', titleData.title);
             } else {
-                console.log('IMDBuddy: No rating found for:', titleData.title);
+                LOGGER.debug('IMDBuddy: No rating found for:', titleData.title);
             }
         } catch (error) {
-            console.error('IMDBuddy: Error processing card:', error, titleData);
+            LOGGER.error('IMDBuddy: Error processing card:', error, titleData);
         }
     },
 

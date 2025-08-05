@@ -17,7 +17,7 @@ const ApiService = {
      * Loads cache from storage and cleans expired entries
      */
     async init() {
-        LOGGER.debug('ApiService: Initializing...');
+        LOGGER.group('ApiService: Initializing...');
         try {
             this.cache = await Storage.get(BASE_CONFIG.STORAGE_KEY);
             LOGGER.debug('ApiService: Cache loaded, entries:', Object.keys(this.cache).length);
@@ -26,6 +26,8 @@ const ApiService = {
         } catch (error) {
             LOGGER.error('ApiService: Initialization failed:', error);
             throw error;
+        } finally {
+            LOGGER.groupEnd();
         }
     },
 
@@ -34,8 +36,7 @@ const ApiService = {
      * Removes entries older than CACHE_MAX_AGE
      */
     async cleanExpiredEntries() {
-        LOGGER.group('Cache Cleanup');
-        LOGGER.debug('Cleaning expired cache entries...');
+        LOGGER.group('ApiService: Cache Cleanup');
         const now = Date.now();
         let hasExpiredEntries = false;
         let expiredCount = 0;
@@ -49,10 +50,10 @@ const ApiService = {
         }
 
         if (hasExpiredEntries) {
-            LOGGER.debug(`Cleaned ${expiredCount} expired entries`);
+            LOGGER.debug(`ApiService: Cleaned ${expiredCount} expired entries`);
             await this.saveCache();
         } else {
-            LOGGER.verbose('No expired entries found');
+            LOGGER.verbose('ApiService: No expired entries found');
         }
         LOGGER.groupEnd();
     },
