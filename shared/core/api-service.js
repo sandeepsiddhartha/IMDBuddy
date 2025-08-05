@@ -207,13 +207,13 @@ const ApiService = {
             const data = await response.json();
             LOGGER.verbose('API response data:', data);
             
-            if (!data.results || data.results.length === 0) {
+            if (!data || !data.titles || data.titles.length === 0) {
                 LOGGER.warn('No results found for:', title);
                 return null;
             }
             
             // Use fuzzy matching to find the best result
-            const bestMatch = FuzzyMatcher.findBestMatch(title, data.results, expectedType);
+            const bestMatch = FuzzyMatcher.findBestMatch(title, data.titles, expectedType);
             LOGGER.debug('Best match found:', bestMatch);
             
             if (!bestMatch) {

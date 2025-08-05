@@ -207,13 +207,15 @@ const ApiService = {
             const data = await response.json();
             LOGGER.verbose('API response data:', data);
             
-            if (!data.results || data.results.length === 0) {
-                LOGGER.warn('No results found for:', title);
+            // Validate the response structure
+            const validatedData = this.validateApiResponse(data);
+            if (!validatedData) {
+                LOGGER.warn('Invalid API response structure for:', title);
                 return null;
             }
             
             // Use fuzzy matching to find the best result
-            const bestMatch = FuzzyMatcher.findBestMatch(title, data.results, expectedType);
+            const bestMatch = FuzzyMatcher.findBestMatch(title, validatedData.titles, expectedType);
             LOGGER.debug('Best match found:', bestMatch);
             
             if (!bestMatch) {

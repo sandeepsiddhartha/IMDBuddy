@@ -8,41 +8,55 @@
 // Wait for DOM and all modules to be ready
 function initializeIMDBuddy() {
     'use strict';
-    
-    // Check if already loaded to avoid duplicates
-    if (window.IMDBuddyLoaded) {
-        LOGGER.debug('IMDBuddy: Already loaded, skipping initialization');
-        return;
+    console.group('IMDBuddy: #initializeIMDBuddy');
+    try {
+        // Check if already loaded to avoid duplicates
+        if (window.IMDBuddyLoaded) {
+            console.log('IMDBuddy: Already loaded, skipping initialization');
+            return;
+        }
+
+        // Verify all required modules are loaded
+        const requiredModules = [
+            'BASE_CONFIG', 
+            'LOGGER', 
+            'PLATFORM_CONFIGS', 
+            'PlatformDetector', 
+            'Storage', 
+            'TitleExtractor', 
+            'FuzzyMatcher', 
+            'ApiService', 
+            'Overlay', 
+            'StreamingRatings'];
+        const missingModules = requiredModules.filter(module => typeof window[module] === 'undefined');
+        
+        if (missingModules.length > 0) {
+            console.error('IMDBuddy: Missing required modules:', missingModules);
+            return;
+        }
+        
+        LOGGER.debug('IMDBuddy: All modules loaded, starting initialization...');
+        
+        // Check if platform is supported
+        if (!PlatformDetector.isSupportedPlatform()) {
+            LOGGER.error('IMDBuddy: Platform not supported');
+            return;
+        }
+        
+        // Initialize the extension
+        LOGGER.debug('IMDBuddy: Starting StreamingRatings initialization...');
+        StreamingRatings.init();
+        
+        // Expose for popup communication
+        window.streamingRatings = StreamingRatings;
+        
+        LOGGER.debug('IMDBuddy: Extension loaded successfully');
+        
+        // Mark as loaded
+        window.IMDBuddyLoaded = true;
+    } finally {
+        console.groupEnd();
     }
-    
-    // Verify all required modules are loaded
-    const requiredModules = ['BASE_CONFIG', 'LOGGER', 'PLATFORM_CONFIGS', 'PlatformDetector', 'Storage', 'TitleExtractor', 'FuzzyMatcher', 'ApiService', 'Overlay', 'StreamingRatings'];
-    const missingModules = requiredModules.filter(module => typeof window[module] === 'undefined');
-    
-    if (missingModules.length > 0) {
-        console.error('IMDBuddy: Missing required modules:', missingModules);
-        return;
-    }
-    
-    LOGGER.debug('IMDBuddy: All modules loaded, starting initialization...');
-    
-    // Check if platform is supported
-    if (!PlatformDetector.isSupportedPlatform()) {
-        LOGGER.debug('IMDBuddy: Platform not supported');
-        return;
-    }
-    
-    // Initialize the extension
-    LOGGER.debug('IMDBuddy: Starting StreamingRatings initialization...');
-    StreamingRatings.init();
-    
-    // Expose for popup communication
-    window.streamingRatings = StreamingRatings;
-    
-    LOGGER.debug('IMDBuddy: Extension loaded successfully');
-    
-    // Mark as loaded
-    window.IMDBuddyLoaded = true;
 }
 
 // Message listener for popup communication

@@ -22,7 +22,7 @@ const PlatformDetector = {
             }
         }
         
-        LOGGER.warn(`PlatformDetector: Unsupported platform: ${hostname}`);
+        LOGGER.error(`PlatformDetector: Unsupported platform: ${hostname}`);
         return null;
     },
 

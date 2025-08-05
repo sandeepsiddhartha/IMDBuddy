@@ -188,34 +188,47 @@ const FuzzyMatcher = {
      * @returns {Object|null} Best matching result or null
      */
     findBestMatch(searchTitle, results, expectedType = null) {
-        if (!results || results.length === 0) return null;
-        
-        let bestMatch = null;
-        let bestScore = 0;
-        
-        for (const result of results) {
-            if (!result.title) continue;
-            
-            const similarity = this.getSimilarity(searchTitle, result.title);
-            let score = similarity;
-            
-            // Boost score for type match
-            if (expectedType && result.type === expectedType) {
-                score += 0.1;
+        LOGGER.group('FuzzyMatcher: #findBestMatch', searchTitle);
+        try {
+            if (!results || results.length === 0) {
+                LOGGER.verbose("FuzzyMatcher: No results - nothing to match");
+                return null;
             }
-            
-            // Boost score for exact title match
-            if (this.normalize(searchTitle) === this.normalize(result.title)) {
-                score += 0.2;
+            let filteredResults = results;
+
+            if (expectedType) {
+                const typeFiltered = results.filter(result => {
+                    const resultType = result.titleType?.toLowerCase() || result.type?.toLowerCase();
+                    return resultType === expectedType;
+                });
+                if (typeFiltered.length > 0) filteredResults = typeFiltered;
             }
+
+            let bestMatch = null;
+            let bestScore = 0;
             
-            if (score > bestScore && score >= BASE_CONFIG.MIN_MATCH_SCORE) {
-                bestScore = score;
-                bestMatch = result;
+            for (const result of filteredResults) {
+                if (!result.primaryTitle) continue;
+
+                const title = result.primaryTitle || result.title || '';
+                const score = this.getSimilarity(searchTitle, title);
+                if (score > bestScore) {
+                    bestScore = score;
+                    bestMatch = { result, score };
+                    LOGGER.verbose("FuzzyMatcher: Updating best match to: ", bestMatch, bestScore);
+                }
             }
+
+            if (bestScore >= BASE_CONFIG.MIN_MATCH_SCORE) {
+                LOGGER.verbose("FuzzyMatcher: returning best match");
+                return bestMatch;
+            } else {
+                LOGGER.verbose("FuzzyMatcher: No high-confidence match found");
+                return null;
+            }
+        } finally {
+            LOGGER.groupEnd();
         }
-        
-        return bestMatch;
     }
 };
 
