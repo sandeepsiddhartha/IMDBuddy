@@ -44,6 +44,9 @@ const LOGGER = {
             console.log(`[${BASE_CONFIG.NAME}]`, ...args);
         }
     },
+    info: (...args) => {
+        console.info(`[${BASE_CONFIG.NAME}]`, ...args);
+    },
     warn: (...args) => {
         console.warn(`[${BASE_CONFIG.NAME}]`, ...args);
     },

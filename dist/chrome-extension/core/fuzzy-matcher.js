@@ -188,10 +188,10 @@ const FuzzyMatcher = {
      * @returns {Object|null} Best matching result or null
      */
     findBestMatch(searchTitle, results, expectedType = null) {
-        LOGGER.group('FuzzyMatcher: #findBestMatch', searchTitle);
+        LOGGER.group('IMDBuddy: FuzzyMatcher#findBestMatch: ' + searchTitle);
         try {
             if (!results || results.length === 0) {
-                LOGGER.verbose("FuzzyMatcher: No results - nothing to match");
+                LOGGER.verbose("IMDBuddy: FuzzyMatcher#findBestMatch: No results - nothing to match");
                 return null;
             }
             let filteredResults = results;
@@ -201,7 +201,10 @@ const FuzzyMatcher = {
                     const resultType = result.titleType?.toLowerCase() || result.type?.toLowerCase();
                     return resultType === expectedType;
                 });
-                if (typeFiltered.length > 0) filteredResults = typeFiltered;
+                if (typeFiltered.length > 0) {
+                    filteredResults = typeFiltered;
+                    LOGGER.verbose(`IMDBuddy: FuzzyMatcher#findBestMatch: Filtered by type '${expectedType}', ${filteredResults.length} results`);
+                }
             }
 
             let bestMatch = null;
@@ -215,15 +218,15 @@ const FuzzyMatcher = {
                 if (score > bestScore) {
                     bestScore = score;
                     bestMatch = { result, score };
-                    LOGGER.verbose("FuzzyMatcher: Updating best match to: ", bestMatch, bestScore);
+                    LOGGER.verbose("IMDBuddy: FuzzyMatcher#findBestMatch: Updating best match to:", bestMatch.result.primaryTitle, "score:", bestScore);
                 }
             }
 
             if (bestScore >= BASE_CONFIG.MIN_MATCH_SCORE) {
-                LOGGER.verbose("FuzzyMatcher: returning best match");
+                LOGGER.verbose("IMDBuddy: FuzzyMatcher#findBestMatch: Returning best match with score:", bestScore);
                 return bestMatch;
             } else {
-                LOGGER.verbose("FuzzyMatcher: No high-confidence match found");
+                LOGGER.verbose("IMDBuddy: FuzzyMatcher#findBestMatch: No high-confidence match found, best score:", bestScore);
                 return null;
             }
         } finally {

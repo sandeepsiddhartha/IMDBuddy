@@ -8,11 +8,12 @@
 // Wait for DOM and all modules to be ready
 function initializeIMDBuddy() {
     'use strict';
-    console.group('IMDBuddy: #initializeIMDBuddy');
+    // Use console.log here since LOGGER might not be available yet
+    console.group('IMDBuddy: initializeIMDBuddy');
     try {
         // Check if already loaded to avoid duplicates
         if (window.IMDBuddyLoaded) {
-            console.log('IMDBuddy: Already loaded, skipping initialization');
+            console.log('IMDBuddy: initializeIMDBuddy: Already loaded, skipping initialization');
             return;
         }
 
@@ -31,40 +32,41 @@ function initializeIMDBuddy() {
         const missingModules = requiredModules.filter(module => typeof window[module] === 'undefined');
         
         if (missingModules.length > 0) {
-            console.error('IMDBuddy: Missing required modules:', missingModules);
+            console.error('IMDBuddy: initializeIMDBuddy: Missing required modules:', missingModules);
             return;
         }
         
-        LOGGER.debug('IMDBuddy: All modules loaded, starting initialization...');
+        // Now LOGGER should be available
+        LOGGER.info('IMDBuddy: initializeIMDBuddy: All modules loaded, starting initialization...');
         
         // Check if platform is supported
         if (!PlatformDetector.isSupportedPlatform()) {
-            LOGGER.error('IMDBuddy: Platform not supported');
+            LOGGER.warn('IMDBuddy: initializeIMDBuddy: Platform not supported');
             return;
         }
         
         // Initialize the extension
-        LOGGER.debug('IMDBuddy: Starting StreamingRatings initialization...');
+        LOGGER.debug('IMDBuddy: initializeIMDBuddy: Starting StreamingRatings initialization...');
         StreamingRatings.init();
         
         // Expose for popup communication
         window.streamingRatings = StreamingRatings;
         
-        LOGGER.debug('IMDBuddy: Extension loaded successfully');
+        LOGGER.info('IMDBuddy: initializeIMDBuddy: Extension loaded successfully');
         
         // Mark as loaded
         window.IMDBuddyLoaded = true;
     } finally {
-        console.groupEnd();
+        console.groupEnd(); // Use console.groupEnd since we started with console.group
     }
 }
 
 // Message listener for popup communication
 if (typeof chrome !== 'undefined' && chrome.runtime) {
     chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
-        LOGGER.debug('IMDBuddy: Received message:', message);
+        LOGGER.debug('IMDBuddy: init: Received message:', message);
         if (message.type === 'CLEAR_CACHE' && window.streamingRatings) {
-            LOGGER.debug('IMDBuddy: Clearing cache...');
+            LOGGER.debug('IMDBuddy: init: Clearing cache...');
             window.streamingRatings.clearCache();
             sendResponse({ success: true });
         }
@@ -72,11 +74,11 @@ if (typeof chrome !== 'undefined' && chrome.runtime) {
 }
 
 // Initialize when DOM is ready
-LOGGER.debug('IMDBuddy: Document ready state:', document.readyState);
+LOGGER.debug('IMDBuddy: init: Document ready state:', document.readyState);
 if (document.readyState === 'loading') {
-    LOGGER.debug('IMDBuddy: Waiting for DOMContentLoaded...');
+    LOGGER.debug('IMDBuddy: init: Waiting for DOMContentLoaded...');
     document.addEventListener('DOMContentLoaded', initializeIMDBuddy);
 } else {
-    LOGGER.debug('IMDBuddy: DOM already loaded, initializing immediately...');
+    LOGGER.debug('IMDBuddy: init: DOM already loaded, initializing immediately...');
     initializeIMDBuddy();
 }

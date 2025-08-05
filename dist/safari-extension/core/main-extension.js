@@ -16,52 +16,58 @@ const StreamingRatings = {
      * Sets up platform detection, API service, and DOM observation
      */
     async init() {
-        LOGGER.group('StreamingRatings Initialization');
-        LOGGER.debug('Starting initialization...');
-        
-        // Check if platform is supported
-        const platformData = PlatformDetector.getCurrentPlatform();
-        if (!platformData) {
-            LOGGER.warn('Unsupported platform, exiting');
-            LOGGER.groupEnd();
-            return;
-        }
-        
-        this.platform = platformData;
-        LOGGER.debug('Platform detected:', this.platform.config.name);
-        
-        // Initialize API service
+        LOGGER.group('IMDBuddy: StreamingRatings#init');
         try {
-            await ApiService.init();
-            LOGGER.debug('API service initialized');
-        } catch (error) {
-            LOGGER.error('Failed to initialize API service:', error);
+            LOGGER.debug('IMDBuddy: StreamingRatings#init: Starting initialization...');
+            
+            // Check if platform is supported
+            const platformData = PlatformDetector.getCurrentPlatform();
+            if (!platformData) {
+                LOGGER.warn('IMDBuddy: StreamingRatings#init: Unsupported platform, exiting');
+                return;
+            }
+            
+            this.platform = platformData;
+            LOGGER.info('IMDBuddy: StreamingRatings#init: Platform detected:', this.platform.config.name);
+            
+            // Initialize API service
+            try {
+                await ApiService.init();
+                LOGGER.info('IMDBuddy: StreamingRatings#init: API service initialized');
+            } catch (error) {
+                LOGGER.error('IMDBuddy: StreamingRatings#init: Failed to initialize API service:', error);
+                return;
+            }
+            
+            // Start observing for cards
+            this.startObserver();
+            LOGGER.info('IMDBuddy: StreamingRatings#init: Initialization complete');
+        } finally {
             LOGGER.groupEnd();
-            return;
         }
-        
-        // Start observing for cards
-        this.startObserver();
-        LOGGER.debug('Initialization complete');
-        LOGGER.groupEnd();
     },
 
     /**
      * Start DOM observation and initial card processing
      */
     startObserver() {
-        LOGGER.debug('Starting DOM observation...');
-        
-        // Process existing cards immediately
-        this.processExistingCards();
-        
-        // Set up observer for new content
-        this.setupObserver();
-        
-        // Set up periodic processing (for dynamic content)
-        setTimeout(() => {
+        LOGGER.group('IMDBuddy: StreamingRatings#startObserver');
+        try {
+            LOGGER.debug('IMDBuddy: StreamingRatings#startObserver: Starting DOM observation...');
+            
+            // Process existing cards immediately
             this.processExistingCards();
-        }, BASE_CONFIG.OBSERVER_DELAY);
+            
+            // Set up observer for new content
+            this.setupObserver();
+            
+            // Set up periodic processing (for dynamic content)
+            setTimeout(() => {
+                this.processExistingCards();
+            }, BASE_CONFIG.OBSERVER_DELAY);
+        } finally {
+            LOGGER.groupEnd();
+        }
     },
 
     /**
@@ -69,13 +75,13 @@ const StreamingRatings = {
      * Uses debouncing to avoid excessive processing
      */
     setupObserver() {
-        LOGGER.verbose('StreamingRatings: Setting up MutationObserver');
+        LOGGER.verbose('IMDBuddy: StreamingRatings#setupObserver: Setting up MutationObserver');
         
         const observer = new MutationObserver((mutations) => {
-            LOGGER.debug(`StreamingRatings: DOM mutations detected: ${mutations.length}`);
+            LOGGER.debug(`IMDBuddy: StreamingRatings#setupObserver: DOM mutations detected: ${mutations.length}`);
             clearTimeout(this.debounceTimer);
             this.debounceTimer = setTimeout(() => {
-                LOGGER.debug('StreamingRatings: Processing cards after DOM change');
+                LOGGER.debug('IMDBuddy: StreamingRatings#setupObserver: Processing cards after DOM change');
                 this.processExistingCards();
             }, 1000);
         });
@@ -85,7 +91,7 @@ const StreamingRatings = {
             subtree: true 
         });
         
-        LOGGER.debug('StreamingRatings: MutationObserver active');
+        LOGGER.verbose('IMDBuddy: StreamingRatings#setupObserver: MutationObserver active');
     },
 
     /**
@@ -93,28 +99,33 @@ const StreamingRatings = {
      * Finds cards and processes them in batches
      */
     async processExistingCards() {
-        LOGGER.verbose('StreamingRatings: Processing existing cards...');
-        const cards = this.findCards();
-        LOGGER.debug(`StreamingRatings: Found ${cards.length} cards to process`);
-        
-        if (cards.length === 0) {
-            LOGGER.debug('StreamingRatings: No cards found');
-            return;
-        }
-        
-        // Process cards in batches to avoid overwhelming the API
-        const batchSize = 10;
-        for (let i = 0; i < cards.length; i += batchSize) {
-            const batch = cards.slice(i, i + batchSize);
-            LOGGER.verbose(`StreamingRatings: Processing batch ${Math.floor(i/batchSize) + 1}/${Math.ceil(cards.length/batchSize)} (${batch.length} cards)`);
-            await this.processBatch(batch);
+        LOGGER.group('IMDBuddy: StreamingRatings#processExistingCards');
+        try {
+            LOGGER.verbose('IMDBuddy: StreamingRatings#processExistingCards: Processing existing cards...');
+            const cards = this.findCards();
+            LOGGER.debug(`IMDBuddy: StreamingRatings#processExistingCards: Found ${cards.length} cards to process`);
             
-            // Small delay between batches
-            if (i + batchSize < cards.length) {
-                await new Promise(resolve => setTimeout(resolve, 500));
+            if (cards.length === 0) {
+                LOGGER.verbose('IMDBuddy: StreamingRatings#processExistingCards: No cards found');
+                return;
             }
+            
+            // Process cards in batches to avoid overwhelming the API
+            const batchSize = 10;
+            for (let i = 0; i < cards.length; i += batchSize) {
+                const batch = cards.slice(i, i + batchSize);
+                LOGGER.verbose(`IMDBuddy: StreamingRatings#processExistingCards: Processing batch ${Math.floor(i/batchSize) + 1}/${Math.ceil(cards.length/batchSize)} (${batch.length} cards)`);
+                await this.processBatch(batch);
+                
+                // Small delay between batches
+                if (i + batchSize < cards.length) {
+                    await new Promise(resolve => setTimeout(resolve, 500));
+                }
+            }
+            LOGGER.info('IMDBuddy: StreamingRatings#processExistingCards: Finished processing all cards');
+        } finally {
+            LOGGER.groupEnd();
         }
-        LOGGER.verbose('StreamingRatings: Finished processing all cards');
     },
 
     /**
@@ -151,14 +162,14 @@ const StreamingRatings = {
             
             // Debug logging
             if (foundCards.length > 0) {
-                console.log(`IMDBuddy: Found ${foundCards.length} cards with selector: ${selector}`);
+                LOGGER.verbose(`IMDBuddy: StreamingRatings#findCards: Found ${foundCards.length} cards with selector: ${selector}`);
             }
         }
         
         // Filter out cards that already have overlays
         const filteredCards = cards.filter(card => !Overlay.hasOverlay(card));
         
-        console.log(`IMDBuddy: Total cards found: ${cards.length}, New cards: ${filteredCards.length}`);
+        LOGGER.debug(`IMDBuddy: StreamingRatings#findCards: Total cards found: ${cards.length}, New cards: ${filteredCards.length}`);
         
         return filteredCards;
     },
@@ -169,21 +180,24 @@ const StreamingRatings = {
      * @param {Object} titleData - Extracted title data
      */
     async processCard(element, titleData) {
+        LOGGER.group(`IMDBuddy: StreamingRatings#processCard: ${titleData.title}`);
         try {
-            LOGGER.debug('IMDBuddy: Processing card with title:', titleData.title);
+            LOGGER.verbose('IMDBuddy: StreamingRatings#processCard: Processing card with title:', titleData.title);
             
             const rating = await ApiService.getRating(titleData);
-            LOGGER.debug('IMDBuddy: Received rating:', rating);
+            LOGGER.verbose('IMDBuddy: StreamingRatings#processCard: Received rating:', rating);
 
             if (rating) {
                 const overlay = Overlay.create(rating);
                 Overlay.addTo(element, overlay, this.platform.config);
-                LOGGER.verbose('IMDBuddy: Added rating overlay for:', titleData.title);
+                LOGGER.verbose('IMDBuddy: StreamingRatings#processCard: Added rating overlay for:', titleData.title);
             } else {
-                LOGGER.debug('IMDBuddy: No rating found for:', titleData.title);
+                LOGGER.debug('IMDBuddy: StreamingRatings#processCard: No rating found for:', titleData.title);
             }
         } catch (error) {
-            LOGGER.error('IMDBuddy: Error processing card:', error, titleData);
+            LOGGER.error('IMDBuddy: StreamingRatings#processCard: Error processing card:', error, titleData);
+        } finally {
+            LOGGER.groupEnd();
         }
     },
 
@@ -192,8 +206,13 @@ const StreamingRatings = {
      * @returns {Promise<void>}
      */
     async clearCache() {
-        await ApiService.clearCache();
-        console.log('IMDBuddy: Cache cleared');
+        LOGGER.group('IMDBuddy: StreamingRatings#clearCache');
+        try {
+            await ApiService.clearCache();
+            LOGGER.info('IMDBuddy: StreamingRatings#clearCache: Cache cleared');
+        } finally {
+            LOGGER.groupEnd();
+        }
     },
 
     /**
@@ -215,7 +234,7 @@ const StreamingRatings = {
      */
     addPlatform(key, config) {
         PLATFORM_CONFIGS[key] = config;
-        console.log(`IMDBuddy: Added platform configuration for ${config.name}`);
+        LOGGER.info(`IMDBuddy: StreamingRatings#addPlatformConfig: Added platform configuration for ${config.name}`);
     }
 };
 
@@ -225,7 +244,7 @@ const StreamingRatings = {
 function initializeExtension() {
     // Check if platform is supported
     if (!PlatformDetector.isSupportedPlatform()) {
-        console.log('IMDBuddy: Platform not supported');
+        LOGGER.warn('IMDBuddy: StreamingRatings#init: Platform not supported');
         return;
     }
 
@@ -235,7 +254,7 @@ function initializeExtension() {
     // Expose extension instance globally for debugging and popup communication
     window.streamingRatings = StreamingRatings;
     
-    console.log('IMDBuddy: Extension loaded successfully');
+    LOGGER.info('IMDBuddy: StreamingRatings: Extension loaded successfully');
 }
 
 window.StreamingRatings = StreamingRatings;

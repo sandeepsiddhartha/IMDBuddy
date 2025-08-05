@@ -13,16 +13,16 @@ const PlatformDetector = {
      */
     getCurrentPlatform() {
         const hostname = window.location.hostname;
-        LOGGER.debug(`PlatformDetector: Checking hostname: ${hostname}`);
+        LOGGER.debug(`IMDBuddy: PlatformDetector#getCurrentPlatform: Checking hostname: ${hostname}`);
         
         for (const [key, config] of Object.entries(PLATFORM_CONFIGS)) {
             if (config.hostnames.some(host => hostname.includes(host))) {
-                LOGGER.debug(`PlatformDetector: Detected platform: ${config.name} (${key})`);
+                LOGGER.info(`IMDBuddy: PlatformDetector#getCurrentPlatform: Detected platform: ${config.name} (${key})`);
                 return { key, config };
             }
         }
         
-        LOGGER.error(`PlatformDetector: Unsupported platform: ${hostname}`);
+        LOGGER.warn(`IMDBuddy: PlatformDetector#getCurrentPlatform: Unsupported platform: ${hostname}`);
         return null;
     },
 
@@ -32,7 +32,7 @@ const PlatformDetector = {
      */
     isSupportedPlatform() {
         const isSupported = this.getCurrentPlatform() !== null;
-        LOGGER.debug(`PlatformDetector: Platform supported: ${isSupported}`);
+        LOGGER.debug(`IMDBuddy: PlatformDetector#isSupportedPlatform: Platform supported: ${isSupported}`);
         return isSupported;
     },
 
