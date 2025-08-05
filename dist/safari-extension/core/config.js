@@ -19,6 +19,8 @@ const BASE_CONFIG = {
     
     // Storage settings
     STORAGE_KEY: 'imdb_cache',
+    SCHEMA_VERSION_KEY: "imdb_cache_schema_version",
+    SCHEMA_VERSION: 2, // Increment this when changing cache structure
     CACHE_MAX_AGE: 30 * 24 * 60 * 60 * 1000, // 30 days in milliseconds
     
     // Matching settings

@@ -38,15 +38,24 @@ const ApiService = {
     async cleanExpiredEntries() {
         LOGGER.group('IMDBuddy: ApiService#cleanExpiredEntries');
         try {
-            const now = Date.now();
             let hasExpiredEntries = false;
             let expiredCount = 0;
-
-            for (const [key, entry] of Object.entries(this.cache)) {
-                if (!entry.timestamp || (now - entry.timestamp) > BASE_CONFIG.CACHE_MAX_AGE) {
-                    delete this.cache[key];
-                    hasExpiredEntries = true;
-                    expiredCount++;
+            if (BASE_CONFIG.SCHEMA_VERSION != this.cache[BASE_CONFIG.SCHEMA_VERSION_KEY]) {
+                LOGGER.info(`IMDBuddy: ApiService#cleanExpiredEntries: Clearing cache, schema changed`);
+                expiredCount = this.cache.length;
+                hasExpiredEntries = true;
+                this.clearCache();
+                this.cache[BASE_CONFIG.SCHEMA_VERSION_KEY] = {
+                    value: BASE_CONFIG.SCHEMA_VERSION
+                };
+            } else {
+                const now = Date.now();
+                for (const [key, entry] of Object.entries(this.cache)) {
+                    if (!entry.timestamp || (now - entry.timestamp) > BASE_CONFIG.CACHE_MAX_AGE) {
+                        delete this.cache[key];
+                        hasExpiredEntries = true;
+                        expiredCount++;
+                    }
                 }
             }
 
@@ -229,13 +238,14 @@ const ApiService = {
                 LOGGER.warn('IMDBuddy: ApiService#fetchFromApi: No suitable match found for:', title);
                 return null;
             }
-            
+
             const result = {
                 score: bestMatch.result.rating?.aggregateRating ?? 'N/A',
-                votes: bestMatch.result.rating?.voteCount ?? '0',
+                votes: this.formatVotes(bestMatch.result.rating?.voteCount) ?? '0',
                 title: bestMatch.result.primaryTitle || bestMatch.result.originalTitle,
                 type: bestMatch.result.type,
-                year: bestMatch.result.startYear
+                year: bestMatch.result.startYear,
+                url: `https://www.imdb.com/title/${bestMatch.result.id}/`
             };
             LOGGER.verbose('IMDBuddy: ApiService#fetchFromApi: Formatted result:', result);
             

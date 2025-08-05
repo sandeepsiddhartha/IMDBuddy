@@ -48,19 +48,12 @@
 
 .imdb-rating-score {
     font-weight: 600;
-    font-size: 14px;
+    font-size: 16px;
     color: #ffffff;
     text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5);
     display: flex;
     align-items: center;
     gap: 1px;
-}
-
-.imdb-rating-score::before {
-    content: "★";
-    color: #f5c518;
-    font-size: 9px;
-    margin-right: 1px;
 }
 
 .imdb-votes {
@@ -94,11 +87,7 @@
     }
 
     .imdb-rating-score {
-        font-size: 16px;
-    }
-
-    .imdb-rating-score::before {
-        font-size: 8px;
+        font-size: 18px;
     }
 
     .imdb-votes {
@@ -147,11 +136,5 @@
 .imdb-rating-overlay:hover .imdb-logo {
     text-shadow: 
         0 0 3px #f5c518,
-        0 1px 2px rgba(0, 0, 0, 0.7);
-}
-
-.imdb-rating-overlay:hover .imdb-rating-score::before {
-    text-shadow: 
-        0 0 4px #f5c518,
         0 1px 2px rgba(0, 0, 0, 0.7);
 }

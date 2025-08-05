@@ -56,49 +56,23 @@ async function checkPlatformSupport() {
                 hostname: platformInfo.hostname
             });
         } else {
-            // Fallback to URL-based detection
-            updateStatusUI(detectPlatformFromUrl(hostname));
+            updateUnsupportedPlatformStatusUI();
         }
-        
         console.log('[IMDBuddy Popup] Platform detection:', platformInfo || { hostname });
-        
     } catch (error) {
         // If we can't access tabs (no permission) or script injection fails,
         // show unsupported status
         console.log('[IMDBuddy Popup] Cannot detect platform (likely no permission or unsupported site)');
-        updateStatusUI({ 
-            supported: false, 
-            name: 'Unsupported Site', 
-            hostname: '' 
-        });
+        updateUnsupportedPlatformStatusUI();
     }
 }
 
-/**
- * Fallback platform detection from URL (when PlatformDetector not available)
- */
-function detectPlatformFromUrl(hostname) {
-    const platforms = {
-        'hotstar.com': { name: 'Hotstar', supported: true },
-        'disneyplus.com': { name: 'Disney+', supported: true },
-        'netflix.com': { name: 'Netflix', supported: true },
-        'primevideo.com': { name: 'Prime Video', supported: true },
-        'amazon.com': { name: 'Prime Video', supported: true }
-    };
-    
-    // Check for platform matches
-    for (const [domain, info] of Object.entries(platforms)) {
-        if (hostname.includes(domain)) {
-            return { ...info, hostname };
-        }
-    }
-    
-    // Not a supported platform
-    return { 
-        name: hostname.replace('www.', ''), 
+function updateUnsupportedPlatformStatusUI() {
+    updateStatusUI({ 
         supported: false, 
-        hostname 
-    };
+        name: 'Unsupported Site', 
+        hostname: '' 
+    });
 }
 
 /**
@@ -119,7 +93,7 @@ function updateStatusUI(platformInfo) {
         // Unsupported platform
         statusIndicator.className = 'status-indicator unsupported';
         statusText.textContent = 'Unsupported Platform';
-        platformName.textContent = platformInfo.name || 'Unknown Site';
+        platformName.textContent = platformInfo.name || 'N/A';
         platformName.className = 'platform-name unsupported';
     }
 }
