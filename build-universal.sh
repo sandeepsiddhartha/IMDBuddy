@@ -102,6 +102,29 @@ cp "build-tools/safari-manifest.json" "$SAFARI_DIR/manifest.json"
 
 print_success "Safari extension built in $SAFARI_DIR/"
 
+# Update Safari Xcode project symlinks automatically
+print_status "Updating Safari Xcode project symlinks..."
+SAFARI_XCODE_DIR="Safari-App/IMDBuddy-Safari/IMDBuddy-Safari Extension"
+
+if [ -d "$SAFARI_XCODE_DIR" ]; then
+    cd "$SAFARI_XCODE_DIR"
+    
+    # Remove old symlinks (but preserve native files)
+    rm -f *.html *.css 2>/dev/null || true
+    rm -rf core images 2>/dev/null || true
+    
+    # Create new symlinks that automatically include any new JS files in core
+    ln -sf ../../../dist/safari-extension/core core
+    ln -sf ../../../dist/safari-extension/popup.html popup.html  
+    ln -sf ../../../dist/safari-extension/styles.css styles.css
+    ln -sf ../../../dist/safari-extension/images images
+    
+    cd - > /dev/null
+    print_success "Safari Xcode project symlinks updated - any new core/*.js files will be automatically included"
+else
+    print_warning "Safari Xcode project directory not found - skipping symlink update"
+fi
+
 # Verification
 print_status "Verifying builds..."
 
