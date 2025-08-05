@@ -33,7 +33,3 @@ platformName: {
 ```
 
 Update `manifest.json` permissions and you're done!
-
-## Built with ❤️ by
-
-[Pankaj Tanwar](https://twitter.com/the2ndfloorguy), and checkout his [other side-hustles](https://pankajtanwar.in/side-hustles)
