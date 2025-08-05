@@ -5,12 +5,86 @@
  */
 
 document.addEventListener('DOMContentLoaded', async () => {
+    // Check platform support and update UI
+    await checkPlatformSupport();
+    
     // Check if we should show debug section
     await checkDebugMode();
     
     // Set up event listeners
     setupEventListeners();
 });
+
+/**
+ * Check if the current tab is on a supported platform and update UI
+ */
+async function checkPlatformSupport() {
+    try {
+        const [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
+        const hostname = new URL(tab.url).hostname;
+        
+        // Platform detection logic
+        const platformInfo = detectPlatform(hostname);
+        
+        // Update UI elements
+        updateStatusUI(platformInfo);
+        
+        console.log('[IMDBuddy Popup] Platform detection:', platformInfo);
+    } catch (error) {
+        console.error('[IMDBuddy Popup] Error checking platform support:', error);
+        updateStatusUI({ supported: false, name: 'Unknown', hostname: '' });
+    }
+}
+
+/**
+ * Detect platform from hostname
+ */
+function detectPlatform(hostname) {
+    const platforms = {
+        'hotstar.com': { name: 'Hotstar', supported: true },
+        'disneyplus.com': { name: 'Disney+', supported: true },
+        'netflix.com': { name: 'Netflix', supported: true },
+        'primevideo.com': { name: 'Prime Video', supported: true },
+        'amazon.com': { name: 'Prime Video', supported: true }
+    };
+    
+    // Check for platform matches
+    for (const [domain, info] of Object.entries(platforms)) {
+        if (hostname.includes(domain)) {
+            return { ...info, hostname };
+        }
+    }
+    
+    // Not a supported platform
+    return { 
+        name: hostname.replace('www.', ''), 
+        supported: false, 
+        hostname 
+    };
+}
+
+/**
+ * Update the status UI based on platform detection
+ */
+function updateStatusUI(platformInfo) {
+    const statusIndicator = document.getElementById('statusIndicator');
+    const statusText = document.getElementById('statusText');
+    const platformName = document.getElementById('platformName');
+    
+    if (platformInfo.supported) {
+        // Supported platform
+        statusIndicator.className = 'status-indicator supported';
+        statusText.textContent = 'Supported Platform';
+        platformName.textContent = platformInfo.name;
+        platformName.className = 'platform-name';
+    } else {
+        // Unsupported platform
+        statusIndicator.className = 'status-indicator unsupported';
+        statusText.textContent = 'Unsupported Platform';
+        platformName.textContent = platformInfo.name;
+        platformName.className = 'platform-name unsupported';
+    }
+}
 
 /**
  * Check if debug mode is enabled and show/hide debug section accordingly
