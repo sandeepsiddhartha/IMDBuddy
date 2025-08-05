@@ -6,7 +6,9 @@
   "author": "SS",
   "description": "Get instant IMDb ratings while browsing Netflix, Hotstar, Prime Video & other streaming platforms.",
   "permissions": [
-    "storage"
+    "storage",
+    "activeTab",
+    "scripting"
   ],
   "host_permissions": [
     "https://*.hotstar.com/*",

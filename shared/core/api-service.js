@@ -222,10 +222,11 @@ const ApiService = {
             }
             
             const result = {
-                score: bestMatch.rating || 'N/A',
-                votes: bestMatch.votes ? this.formatVotes(bestMatch.votes) : 'N/A',
-                title: bestMatch.title,
-                year: bestMatch.year
+                score: bestMatch.result.rating?.aggregateRating ?? 'N/A',
+                votes: bestMatch.result.rating?.voteCount ?? '0',
+                title: bestMatch.result.primaryTitle || bestMatch.result.originalTitle,
+                type: bestMatch.result.type,
+                year: bestMatch.result.startYear
             };
             LOGGER.debug('Formatted result:', result);
             

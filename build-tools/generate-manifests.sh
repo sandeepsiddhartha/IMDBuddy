@@ -32,7 +32,7 @@ jq '{
     version: .version,
     author: .author,
     description: .description,
-    permissions: ["storage"],
+    permissions: (.permissions | to_entries | map(select(.value == true) | .key)),
     host_permissions: .permissions.host_permissions,
     content_scripts: .content_scripts,
     action: .action,
@@ -48,7 +48,7 @@ jq '{
     version: .version,
     author: .author,
     description: .description,
-    permissions: (["storage"] + .permissions.host_permissions),
+    permissions: ((.permissions | to_entries | map(select(.value == true) | .key)) + .permissions.host_permissions),
     content_scripts: [
         .content_scripts[0] | .js = ["safari-compatibility.js"] + .js
     ],

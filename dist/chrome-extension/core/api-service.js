@@ -207,15 +207,13 @@ const ApiService = {
             const data = await response.json();
             LOGGER.verbose('API response data:', data);
             
-            // Validate the response structure
-            const validatedData = this.validateApiResponse(data);
-            if (!validatedData) {
-                LOGGER.warn('Invalid API response structure for:', title);
+            if (!data || !data.titles || data.titles.length === 0) {
+                LOGGER.warn('No results found for:', title);
                 return null;
             }
             
             // Use fuzzy matching to find the best result
-            const bestMatch = FuzzyMatcher.findBestMatch(title, validatedData.titles, expectedType);
+            const bestMatch = FuzzyMatcher.findBestMatch(title, data.titles, expectedType);
             LOGGER.debug('Best match found:', bestMatch);
             
             if (!bestMatch) {
@@ -224,10 +222,11 @@ const ApiService = {
             }
             
             const result = {
-                score: bestMatch.rating || 'N/A',
-                votes: bestMatch.votes ? this.formatVotes(bestMatch.votes) : 'N/A',
-                title: bestMatch.title,
-                year: bestMatch.year
+                score: bestMatch.result.rating?.aggregateRating ?? 'N/A',
+                votes: bestMatch.result.rating?.voteCount ?? '0',
+                title: bestMatch.result.primaryTitle || bestMatch.result.originalTitle,
+                type: bestMatch.result.type,
+                year: bestMatch.result.startYear
             };
             LOGGER.debug('Formatted result:', result);
             

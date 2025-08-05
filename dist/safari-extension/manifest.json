@@ -7,6 +7,8 @@
   "description": "Get instant IMDb ratings while browsing Netflix, Hotstar, Prime Video & other streaming platforms.",
   "permissions": [
     "storage",
+    "activeTab",
+    "scripting",
     "https://*.hotstar.com/*",
     "https://*.disneyplus.com/*",
     "https://*.netflix.com/*",

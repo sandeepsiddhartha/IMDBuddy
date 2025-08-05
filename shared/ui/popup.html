@@ -161,6 +161,69 @@
             50% { opacity: 0.3; }
             100% { opacity: 1; }
         }
+
+        .debug-section {
+            margin: 16px 0;
+            padding: 12px;
+            background: #1a1a1a;
+            border-radius: 8px;
+            border: 1px solid #444;
+            display: none; /* Hidden by default */
+        }
+
+        .debug-section.visible {
+            display: block;
+        }
+
+        .debug-title {
+            font-size: 11px;
+            color: #f5c518;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 8px;
+            text-align: center;
+        }
+
+        .debug-button {
+            width: 100%;
+            background: #333;
+            border: 1px solid #555;
+            color: #fff;
+            padding: 8px 12px;
+            border-radius: 6px;
+            font-size: 12px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            margin-bottom: 6px;
+        }
+
+        .debug-button:hover {
+            background: #444;
+            border-color: #666;
+        }
+
+        .debug-button:active {
+            background: #555;
+        }
+
+        .debug-button.success {
+            background: #28a745;
+            border-color: #28a745;
+        }
+
+        .debug-button.error {
+            background: #dc3545;
+            border-color: #dc3545;
+        }
+
+        .debug-info {
+            font-size: 10px;
+            color: #aaa;
+            text-align: center;
+            margin-top: 4px;
+        }
     </style>
 </head>
 <body>
@@ -199,9 +262,17 @@
             </div>
         </div>
 
+        <div class="debug-section" id="debugSection">
+            <div class="debug-title">Debug Tools</div>
+            <button class="debug-button" id="clearCacheBtn">Clear Cache</button>
+            <div class="debug-info">Use only when experiencing issues</div>
+        </div>
+
         <div class="footer">
             <a href="https://google.com" class="creator-link" target="_blank">Google</a>
         </div>
     </div>
+
+    <script src="popup.js"></script>
 </body>
 </html>

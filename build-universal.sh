@@ -65,6 +65,7 @@ cp "$SHARED_DIR/core/"*.js "$CHROME_DIR/core/"
 # Copy shared UI files
 cp "$SHARED_DIR/ui/styles.css" "$CHROME_DIR/"
 cp "$SHARED_DIR/ui/popup.html" "$CHROME_DIR/"
+cp "$SHARED_DIR/ui/popup.js" "$CHROME_DIR/"
 
 # Copy shared assets
 cp -r "$SHARED_DIR/assets/images" "$CHROME_DIR/"
@@ -90,6 +91,7 @@ cp "$SHARED_DIR/core/"*.js "$SAFARI_DIR/core/"
 # Copy shared UI files
 cp "$SHARED_DIR/ui/styles.css" "$SAFARI_DIR/"
 cp "$SHARED_DIR/ui/popup.html" "$SAFARI_DIR/"
+cp "$SHARED_DIR/ui/popup.js" "$SAFARI_DIR/"
 
 # Copy shared assets
 cp -r "$SHARED_DIR/assets/images" "$SAFARI_DIR/"
@@ -116,6 +118,7 @@ if [ -d "$SAFARI_XCODE_DIR" ]; then
     # Create new symlinks that automatically include any new JS files in core
     ln -sf ../../../dist/safari-extension/core core
     ln -sf ../../../dist/safari-extension/popup.html popup.html  
+    ln -sf ../../../dist/safari-extension/popup.js popup.js
     ln -sf ../../../dist/safari-extension/styles.css styles.css
     ln -sf ../../../dist/safari-extension/images images
     
