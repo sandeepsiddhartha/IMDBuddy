@@ -39,7 +39,7 @@
 
 .imdb-rating-score {
     font-weight: 600;
-    font-size: 11px;
+    font-size: 14px;
     color: #ffffff;
     text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5);
     display: flex;
@@ -47,12 +47,12 @@
     gap: 1px;
 }
 
-.imdb-rating-score::before {
+/* .imdb-rating-score::before {
     content: "★";
     color: #f5c518;
     font-size: 9px;
     margin-right: 1px;
-}
+} */
 
 .imdb-votes {
     font-size: 7px;
@@ -80,17 +80,17 @@
         border-radius: 6px;
     }
 
-    .imdb-logo {
+/*     .imdb-logo {
         font-size: 6px;
-    }
+    } */
 
     .imdb-rating-score {
-        font-size: 10px;
+        font-size: 16px;
     }
 
-    .imdb-rating-score::before {
+/*     .imdb-rating-score::before {
         font-size: 8px;
-    }
+    } */
 
     .imdb-votes {
         font-size: 6px;
@@ -135,11 +135,11 @@
 }
 
 /* Subtle glow effect on hover */
-.imdb-rating-overlay:hover .imdb-logo {
+/* .imdb-rating-overlay:hover .imdb-logo {
     text-shadow: 
         0 0 3px #f5c518,
         0 1px 2px rgba(0, 0, 0, 0.7);
-}
+} */
 
 .imdb-rating-overlay:hover .imdb-rating-score::before {
     text-shadow: 
