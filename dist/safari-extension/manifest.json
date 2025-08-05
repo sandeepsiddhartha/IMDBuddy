@@ -1,0 +1,49 @@
+{
+  "manifest_version": 2,
+  "name": "IMDBuddy - IMDb Ratings for Hotstar, Netflix, Prime Video & More",
+  "short_name": "IMDBuddy",
+  "version": "0.0.1",
+  "author": "SS",
+  "description": "Get instant IMDb ratings while browsing Netflix, Hotstar, Prime Video & other streaming platforms.",
+  "permissions": [
+    "storage",
+    "https://*.hotstar.com/*",
+    "https://*.disneyplus.com/*",
+    "https://*.netflix.com/*",
+    "https://*.primevideo.com/*",
+    "https://api.imdbapi.dev/*",
+    "https://amazon.com/gp/video/*"
+  ],
+  "content_scripts": [
+    {
+      "matches": [
+        "https://*.hotstar.com/*",
+        "https://*.disneyplus.com/*",
+        "https://*.netflix.com/*",
+        "https://*.primevideo.com/*",
+        "https://amazon.com/gp/video/*"
+      ],
+      "js": [
+        "safari-compatibility.js",
+        "content.js"
+      ],
+      "css": [
+        "styles.css"
+      ]
+    }
+  ],
+  "browser_action": {
+    "default_popup": "popup.html",
+    "default_title": "IMDBuddy - Smart IMDb Ratings"
+  },
+  "icons": {
+    "16": "images/icon.png",
+    "48": "images/icon.png",
+    "128": "images/icon.png"
+  },
+  "browser_specific_settings": {
+    "safari": {
+      "strict_min_version": "14.0"
+    }
+  }
+}
