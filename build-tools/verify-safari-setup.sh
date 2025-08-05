@@ -8,10 +8,10 @@ echo
 REQUIRED_FILES=(
     "safari-manifest.json"
     "safari-compatibility.js" 
-    "build-safari.sh"
-    "Safari-App/README.md"
-    "INSTALLATION.md"
-    "chrome-extension/manifest.json"
+    "../build-safari.sh"
+    "../Safari-App/README.md"
+    "../INSTALLATION.md"
+    "../chrome-extension/manifest.json"
 )
 
 echo "📁 Checking required files..."

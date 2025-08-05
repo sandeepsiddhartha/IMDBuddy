@@ -1,6 +1,10 @@
 #!/bin/bash
 
-# Generate manifests from shared configuration
+# Generate manifests from shared configur}' "$SHARED_CONFIG" > safari-manifest.json
+
+echo "✅ Manifests generated successfully!"
+echo "   - Chrome: chrome-extension/manifest.json"
+echo "   - Safari: build-tools/safari-manifest.json"
 echo "🔧 Generating manifests from shared configuration..."
 
 # Check if jq is available for JSON processing
@@ -10,6 +14,7 @@ if ! command -v jq &> /dev/null; then
 fi
 
 # Read shared configuration
+# Shared configuration file
 SHARED_CONFIG="shared-config.json"
 if [ ! -f "$SHARED_CONFIG" ]; then
     echo "❌ $SHARED_CONFIG not found"
@@ -52,11 +57,11 @@ jq '{
             strict_min_version: "14.0"
         }
     }
-}' "$SHARED_CONFIG" > safari-manifest.json
+}' "$SHARED_CONFIG" > build-tools/safari-manifest.json
 
 echo "✅ Manifests generated successfully!"
 echo "   - Chrome: chrome-extension/manifest.json"
-echo "   - Safari: safari-manifest.json"
+echo "   - Safari: build-tools/safari-manifest.json"
 echo ""
 echo "🔍 Differences between generated manifests:"
 echo "   - Chrome uses Manifest V3, Safari uses V2"

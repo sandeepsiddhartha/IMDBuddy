@@ -1,0 +1,157 @@
+/* styles.css */
+.imdb-rating-overlay {
+    position: absolute;
+    top: 4px;
+    right: 4px;
+    background: linear-gradient(135deg, rgba(0, 0, 0, 0.9), rgba(0, 0, 0, 0.75));
+    backdrop-filter: blur(10px);
+    border-radius: 8px;
+    padding: 4px 6px;
+    z-index: 9999;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    font-size: 10px;
+    line-height: 1.2;
+    color: white;
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    box-shadow: 
+        0 2px 8px rgba(0, 0, 0, 0.4),
+        0 1px 4px rgba(0, 0, 0, 0.2);
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    max-width: 60px;
+    min-width: 50px;
+}
+
+.imdb-rating-overlay:hover {
+    background: linear-gradient(135deg, rgba(0, 0, 0, 0.95), rgba(0, 0, 0, 0.85));
+    transform: translateY(-1px) scale(1.08);
+    box-shadow: 
+        0 4px 12px rgba(0, 0, 0, 0.5),
+        0 2px 6px rgba(0, 0, 0, 0.3);
+}
+
+.imdb-rating-content {
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1px;
+}
+
+/* .imdb-logo {
+    font-weight: 700;
+    font-size: 7px;
+    color: #f5c518;
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.7);
+    letter-spacing: 0.3px;
+    margin-bottom: 1px;
+} */
+
+.imdb-rating-score {
+    font-weight: 600;
+    font-size: 14px;
+    color: #ffffff;
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5);
+    display: flex;
+    align-items: center;
+    gap: 1px;
+}
+
+/* .imdb-rating-score::before {
+    content: "★";
+    color: #f5c518;
+    font-size: 9px;
+    margin-right: 1px;
+} */
+
+.imdb-votes {
+    font-size: 7px;
+    color: #cccccc;
+    opacity: 0.9;
+    font-weight: 500;
+    letter-spacing: 0.1px;
+}
+
+/* Hotstar specific adjustments for better positioning */
+.swiper-slide .imdb-rating-overlay,
+._2Qi2v27TcINx5EvPplHuDs .imdb-rating-overlay,
+.tray-vertical-card .imdb-rating-overlay {
+    top: 3px;
+    right: 3px;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .imdb-rating-overlay {
+        padding: 3px 5px;
+        font-size: 9px;
+        max-width: 50px;
+        min-width: 45px;
+        border-radius: 6px;
+    }
+
+/*     .imdb-logo {
+        font-size: 6px;
+    } */
+
+    .imdb-rating-score {
+        font-size: 16px;
+    }
+
+    /* .imdb-rating-score::before {
+        font-size: 8px;
+    } */
+
+    .imdb-votes {
+        font-size: 6px;
+    }
+}
+
+/* Smooth animation for new overlays */
+.imdb-rating-overlay {
+    animation: fadeInUp 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(8px) scale(0.9);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+    }
+}
+
+/* Loading state with subtle pulse */
+.imdb-rating-overlay.loading {
+    background: linear-gradient(135deg, rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.55));
+    animation: pulse 1.5s ease-in-out infinite;
+}
+
+@keyframes pulse {
+    0%, 100% {
+        opacity: 0.8;
+    }
+    50% {
+        opacity: 1;
+    }
+}
+
+/* Enhanced accessibility */
+.imdb-rating-overlay:focus {
+    outline: 2px solid #f5c518;
+    outline-offset: 2px;
+}
+
+/* Subtle glow effect on hover */
+/* .imdb-rating-overlay:hover .imdb-logo {
+    text-shadow: 
+        0 0 3px #f5c518,
+        0 1px 2px rgba(0, 0, 0, 0.7);
+} */
+
+/* .imdb-rating-overlay:hover .imdb-rating-score::before {
+    text-shadow: 
+        0 0 4px #f5c518,
+        0 1px 2px rgba(0, 0, 0, 0.7);
+} */
