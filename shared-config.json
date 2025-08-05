@@ -1,18 +1,19 @@
 {
-  "manifest_version": 2,
   "name": "IMDBuddy - IMDb Ratings for Hotstar, Netflix, Prime Video & More",
   "short_name": "IMDBuddy",
   "version": "0.0.1",
   "author": "Pankaj Tanwar",
   "description": "Get instant IMDb ratings while browsing Netflix, Hotstar, Prime Video & other streaming platforms.",
-  "permissions": [
-    "storage",
-    "https://*.hotstar.com/*",
-    "https://*.disneyplus.com/*",
-    "https://*.netflix.com/*",
-    "https://*.primevideo.com/*",
-    "https://api.imdbapi.dev/*"
-  ],
+  "permissions": {
+    "storage": true,
+    "host_permissions": [
+      "https://*.hotstar.com/*",
+      "https://*.disneyplus.com/*",
+      "https://*.netflix.com/*",
+      "https://*.primevideo.com/*",
+      "https://api.imdbapi.dev/*"
+    ]
+  },
   "content_scripts": [
     {
       "matches": [
@@ -22,7 +23,6 @@
         "https://*.primevideo.com/*"
       ],
       "js": [
-        "safari-compatibility.js",
         "content.js"
       ],
       "css": [
@@ -30,7 +30,7 @@
       ]
     }
   ],
-  "browser_action": {
+  "action": {
     "default_popup": "popup.html",
     "default_title": "IMDBuddy - Smart IMDb Ratings"
   },
@@ -38,10 +38,5 @@
     "16": "images/icon.png",
     "48": "images/icon.png",
     "128": "images/icon.png"
-  },
-  "browser_specific_settings": {
-    "safari": {
-      "strict_min_version": "14.0"
-    }
   }
 }

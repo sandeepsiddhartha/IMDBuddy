@@ -11,7 +11,7 @@ IMDBuddy is available for both Chrome and Safari browsers. Choose your preferred
 1. Download or clone this repository
 2. Open Chrome and go to `chrome://extensions/`
 3. Enable "Developer mode" in the top right
-4. Click "Load unpacked" and select the repository folder
+4. Click "Load unpacked" and select the `chrome-extension` folder
 5. The extension should now appear in your extensions list
 
 ## 🦆 Safari Extension

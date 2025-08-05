@@ -11,6 +11,7 @@ REQUIRED_FILES=(
     "build-safari.sh"
     "Safari-App/README.md"
     "INSTALLATION.md"
+    "chrome-extension/manifest.json"
 )
 
 echo "📁 Checking required files..."
@@ -76,13 +77,13 @@ fi
 echo
 
 echo "🎯 Summary:"
-echo "- Chrome extension: ✅ (original files maintained)"
+echo "- Chrome extension: ✅ (moved to chrome-extension/ directory)"
 echo "- Safari Web Extension: ✅ (development ready)"
 echo "- Native Safari App: ✅ (Xcode project structure ready)"
 echo "- Documentation: ✅ (README and installation guide)"
 echo "- Build automation: ✅ (build-safari.sh script)"
 echo
 echo "🚀 Next steps:"
-echo "1. For Chrome: Load unpacked extension from root directory"
+echo "1. For Chrome: Load unpacked extension from chrome-extension/ directory"
 echo "2. For Safari: Follow Safari-App/README.md for Xcode setup"
 echo "3. For testing: Run ./build-safari.sh and load safari-extension/ in Safari"

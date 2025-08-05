@@ -13,10 +13,10 @@ mkdir -p "$SAFARI_DIR"
 # Copy core files
 echo "Copying extension files..."
 cp safari-compatibility.js "$SAFARI_DIR/"
-cp content.js "$SAFARI_DIR/"
-cp styles.css "$SAFARI_DIR/"
-cp popup.html "$SAFARI_DIR/"
-cp -r images "$SAFARI_DIR/"
+cp chrome-extension/content.js "$SAFARI_DIR/"
+cp chrome-extension/styles.css "$SAFARI_DIR/"
+cp chrome-extension/popup.html "$SAFARI_DIR/"
+cp -r chrome-extension/images "$SAFARI_DIR/"
 
 # Use Safari-compatible manifest
 cp safari-manifest.json "$SAFARI_DIR/manifest.json"
