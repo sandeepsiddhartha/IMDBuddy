@@ -23,6 +23,8 @@ fi
 
 # Generate Chrome manifest (Manifest V3)
 echo "📝 Generating Chrome manifest (Manifest V3)..."
+# Ensure dist directory exists
+mkdir -p dist/chrome-extension
 jq '{
     manifest_version: 3,
     name: .name,
@@ -35,7 +37,7 @@ jq '{
     content_scripts: .content_scripts,
     action: .action,
     icons: .icons
-}' "$SHARED_CONFIG" > chrome-extension/manifest.json
+}' "$SHARED_CONFIG" > dist/chrome-extension/manifest.json
 
 # Generate Safari manifest (Manifest V2)
 echo "📝 Generating Safari manifest (Manifest V2)..."
@@ -60,7 +62,7 @@ jq '{
 }' "$SHARED_CONFIG" > build-tools/safari-manifest.json
 
 echo "✅ Manifests generated successfully!"
-echo "   - Chrome: chrome-extension/manifest.json"
+echo "   - Chrome: dist/chrome-extension/manifest.json"
 echo "   - Safari: build-tools/safari-manifest.json"
 echo ""
 echo "🔍 Differences between generated manifests:"
