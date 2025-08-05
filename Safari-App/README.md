@@ -2,9 +2,9 @@
 
 This directory contains the Safari Web Extension version of IMDBuddy. Safari extensions require a native macOS app wrapper and must be built using Xcode.
 
-## 🏗️ Modern Build Integration
+## 🏗️ Modern Modular Build Integration
 
-**Important**: This Safari project now uses **generated files** from the modular build system. The extension files are **automatically synced** with the main build output.
+**Important**: This Safari project now uses **modular JavaScript architecture** with generated files from the build system. The extension files are **automatically synced** with the main build output.
 
 ### Build First
 Before opening the Xcode project, always run:
@@ -12,7 +12,7 @@ Before opening the Xcode project, always run:
 ./build-universal.sh
 ```
 
-This generates the latest extension files in `dist/safari-extension/` which are automatically linked to the Xcode project.
+This generates the latest modular extension files in `dist/safari-extension/` which are automatically linked to the Xcode project.
 
 ## Directory Structure
 
@@ -27,7 +27,17 @@ Safari-App/
         ├── SafariExtensionViewController.swift # Popup controller
         ├── Info.plist                     # Extension configuration
         ├── safari-compatibility.js        # Safari compatibility layer
-        ├── content.js          → symlink to dist/safari-extension/content.js
+        ├── core/               → symlink to dist/safari-extension/core/
+        │   ├── config.js                   # Configuration and logging
+        │   ├── platforms.js                # Platform-specific configurations
+        │   ├── platform-detector.js       # Platform detection
+        │   ├── storage.js                  # Extension storage
+        │   ├── title-extractor.js         # Title extraction
+        │   ├── fuzzy-matcher.js           # String matching
+        │   ├── api-service.js             # IMDB API service
+        │   ├── overlay.js                 # Rating overlays
+        │   ├── main-extension.js          # Main extension logic
+        │   └── init.js                    # Initialization entry point
         ├── styles.css          → symlink to dist/safari-extension/styles.css
         ├── popup.html          → symlink to dist/safari-extension/popup.html
         └── images/             → symlink to dist/safari-extension/images/

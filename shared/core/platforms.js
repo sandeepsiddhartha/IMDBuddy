@@ -193,9 +193,5 @@ const PLATFORM_CONFIGS = {
     }
 };
 
-// Export for use in other modules
-if (typeof module !== 'undefined' && module.exports) {
-    module.exports = { PLATFORM_CONFIGS };
-} else {
-    window.PLATFORM_CONFIGS = PLATFORM_CONFIGS;
-}
+// Make available globally for other scripts
+window.PLATFORM_CONFIGS = PLATFORM_CONFIGS;

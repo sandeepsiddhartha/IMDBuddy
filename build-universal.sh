@@ -57,12 +57,10 @@ print_success "Manifests generated successfully"
 # Build Chrome Extension
 print_status "Building Chrome extension..."
 
-# Build content script from modular sources
-print_status "Building content script from modular sources..."
-if ! ./build-tools/build-content-script.sh "$CHROME_DIR/content.js"; then
-    print_error "Failed to build content script"
-    exit 1
-fi
+# Copy modular content scripts
+print_status "Copying modular content scripts..."
+mkdir -p "$CHROME_DIR/core"
+cp "$SHARED_DIR/core/"*.js "$CHROME_DIR/core/"
 
 # Copy shared UI files
 cp "$SHARED_DIR/ui/styles.css" "$CHROME_DIR/"
@@ -84,12 +82,10 @@ print_success "Chrome extension built in $CHROME_DIR/"
 # Build Safari Extension
 print_status "Building Safari extension..."
 
-# Build content script from modular sources
-print_status "Building Safari content script from modular sources..."
-if ! ./build-tools/build-content-script.sh "$SAFARI_DIR/content.js"; then
-    print_error "Failed to build Safari content script"
-    exit 1
-fi
+# Copy modular content scripts
+print_status "Copying modular content scripts..."
+mkdir -p "$SAFARI_DIR/core"
+cp "$SHARED_DIR/core/"*.js "$SAFARI_DIR/core/"
 
 # Copy shared UI files
 cp "$SHARED_DIR/ui/styles.css" "$SAFARI_DIR/"
@@ -110,7 +106,7 @@ print_success "Safari extension built in $SAFARI_DIR/"
 print_status "Verifying builds..."
 
 # Check Chrome extension
-if [ -f "$CHROME_DIR/manifest.json" ] && [ -f "$CHROME_DIR/content.js" ] && [ -f "$CHROME_DIR/styles.css" ]; then
+if [ -f "$CHROME_DIR/manifest.json" ] && [ -f "$CHROME_DIR/core/init.js" ] && [ -f "$CHROME_DIR/styles.css" ] && [ -d "$CHROME_DIR/core" ]; then
     print_success "Chrome extension verification passed"
 else
     print_error "Chrome extension verification failed"
@@ -118,7 +114,7 @@ else
 fi
 
 # Check Safari extension  
-if [ -f "$SAFARI_DIR/manifest.json" ] && [ -f "$SAFARI_DIR/content.js" ] && [ -f "$SAFARI_DIR/styles.css" ]; then
+if [ -f "$SAFARI_DIR/manifest.json" ] && [ -f "$SAFARI_DIR/core/init.js" ] && [ -f "$SAFARI_DIR/styles.css" ] && [ -d "$SAFARI_DIR/core" ]; then
     print_success "Safari extension verification passed"
 else
     print_error "Safari extension verification failed"

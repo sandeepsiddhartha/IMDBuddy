@@ -26,7 +26,16 @@
         "https://amazon.com/gp/video/*"
       ],
       "js": [
-        "content.js"
+        "core/config.js",
+        "core/platforms.js",
+        "core/storage.js",
+        "core/platform-detector.js",
+        "core/title-extractor.js",
+        "core/fuzzy-matcher.js",
+        "core/api-service.js",
+        "core/overlay.js",
+        "core/main-extension.js",
+        "core/init.js"
       ],
       "css": [
         "styles.css"
