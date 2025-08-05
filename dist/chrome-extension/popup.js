@@ -20,26 +20,64 @@ document.addEventListener('DOMContentLoaded', async () => {
  */
 async function checkPlatformSupport() {
     try {
+        // Try to get current tab URL (works only on supported sites due to host_permissions)
         const [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
         const hostname = new URL(tab.url).hostname;
         
-        // Platform detection logic
-        const platformInfo = detectPlatform(hostname);
+        // Inject script to use actual PlatformDetector from extension
+        const result = await chrome.scripting.executeScript({
+            target: { tabId: tab.id },
+            func: () => {
+                // Check if PlatformDetector is available and get platform info
+                if (window.PlatformDetector && typeof window.PlatformDetector.getCurrentPlatform === 'function') {
+                    const platformData = window.PlatformDetector.getCurrentPlatform();
+                    return {
+                        supported: !!platformData,
+                        name: platformData ? platformData.config.name : null,
+                        hostname: window.location.hostname
+                    };
+                }
+                // Fallback if PlatformDetector not available yet
+                return {
+                    supported: false,
+                    name: null,
+                    hostname: window.location.hostname
+                };
+            }
+        });
         
-        // Update UI elements
-        updateStatusUI(platformInfo);
+        const platformInfo = result[0]?.result;
         
-        console.log('[IMDBuddy Popup] Platform detection:', platformInfo);
+        if (platformInfo) {
+            // Use detected platform info
+            updateStatusUI({
+                supported: platformInfo.supported,
+                name: platformInfo.name || platformInfo.hostname.replace('www.', ''),
+                hostname: platformInfo.hostname
+            });
+        } else {
+            // Fallback to URL-based detection
+            updateStatusUI(detectPlatformFromUrl(hostname));
+        }
+        
+        console.log('[IMDBuddy Popup] Platform detection:', platformInfo || { hostname });
+        
     } catch (error) {
-        console.error('[IMDBuddy Popup] Error checking platform support:', error);
-        updateStatusUI({ supported: false, name: 'Unknown', hostname: '' });
+        // If we can't access tabs (no permission) or script injection fails,
+        // show unsupported status
+        console.log('[IMDBuddy Popup] Cannot detect platform (likely no permission or unsupported site)');
+        updateStatusUI({ 
+            supported: false, 
+            name: 'Unsupported Site', 
+            hostname: '' 
+        });
     }
 }
 
 /**
- * Detect platform from hostname
+ * Fallback platform detection from URL (when PlatformDetector not available)
  */
-function detectPlatform(hostname) {
+function detectPlatformFromUrl(hostname) {
     const platforms = {
         'hotstar.com': { name: 'Hotstar', supported: true },
         'disneyplus.com': { name: 'Disney+', supported: true },
@@ -81,7 +119,7 @@ function updateStatusUI(platformInfo) {
         // Unsupported platform
         statusIndicator.className = 'status-indicator unsupported';
         statusText.textContent = 'Unsupported Platform';
-        platformName.textContent = platformInfo.name;
+        platformName.textContent = platformInfo.name || 'Unknown Site';
         platformName.className = 'platform-name unsupported';
     }
 }
@@ -115,7 +153,7 @@ async function checkDebugMode() {
             console.log('[IMDBuddy Popup] Debug mode disabled - hiding debug tools');
         }
     } catch (error) {
-        console.error('[IMDBuddy Popup] Error checking debug mode:', error);
+        console.log('[IMDBuddy Popup] Cannot check debug mode (likely unsupported site)');
         // Hide debug section on error
         const debugSection = document.getElementById('debugSection');
         debugSection.classList.remove('visible');
