@@ -25,7 +25,9 @@ const PLATFORM_CONFIGS = {
         cardSelectors: [
             '.swiper-slide',
             '.tray-vertical-card', 
-            '[data-horizontal-card-container-width]'
+            '[data-horizontal-card-container-width]',
+            '[data-testid="card-hover-container"]',
+            '[data-testid="autoplay-trailer-image-container"]'
         ],
         titleSelectors: [
             '[aria-label]', 

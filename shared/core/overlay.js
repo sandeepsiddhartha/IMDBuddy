@@ -47,12 +47,12 @@ const Overlay = {
         });
         
         // Add visual feedback on hover
-        overlay.addEventListener('mouseenter', () => {
+        overlay.addEventListener('mouseenter', (event) => {
             overlay.style.opacity = '0.9';
             overlay.style.transform = 'scale(1.02)';
         });
         
-        overlay.addEventListener('mouseleave', () => {
+        overlay.addEventListener('mouseleave', (event) => {
             overlay.style.opacity = '1';
             overlay.style.transform = 'scale(1)';
         });

@@ -119,7 +119,7 @@ const StreamingRatings = {
                 
                 // Small delay between batches
                 if (i + batchSize < cards.length) {
-                    await new Promise(resolve => setTimeout(resolve, 500));
+                    await new Promise(resolve => setTimeout(resolve, 200));
                 }
             }
             LOGGER.info('IMDBuddy: StreamingRatings#processExistingCards: Finished processing all cards');
