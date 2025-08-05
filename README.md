@@ -6,6 +6,8 @@ Automatically adds IMDb ratings to every movie and TV show while browsing Hotsta
 
 **Supported Platforms**: Hotstar • Netflix • Prime Video • Disney+ ✨
 
+**Available For**: Chrome • Safari (Web Extension) 🌐
+
 ## 🎛️ Architecture
 
 **Platform-Agnostic Design**: Single codebase supports all platforms through configuration objects containing platform-specific DOM selectors and extraction logic.
@@ -33,3 +35,14 @@ platformName: {
 ```
 
 Update `manifest.json` permissions and you're done!
+
+## 🦆 Safari Extension
+
+A Safari Web Extension version is available in the `Safari-App/` directory. This provides the same functionality as the Chrome extension but packaged as a native macOS app with Safari extension.
+
+### Quick Setup for Safari:
+1. Run `./build-safari.sh` to generate Safari-compatible files
+2. Use the generated files in an Xcode Safari Web Extension project
+3. See `Safari-App/README.md` for detailed build instructions
+
+The Safari extension maintains full compatibility with the Chrome version while providing native macOS integration.
