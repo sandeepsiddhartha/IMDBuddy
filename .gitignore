@@ -1,0 +1,29 @@
+# Build artifacts
+safari-extension/
+
+# macOS
+.DS_Store
+*.dmg
+
+# Xcode
+*.xcworkspace
+*.xcuserdata/
+build/
+DerivedData/
+
+# Node.js (if added later)
+node_modules/
+npm-debug.log*
+
+# IDE
+.vscode/
+.idea/
+
+# Temporary files
+*.tmp
+*.temp
+.cache/
+
+# OS generated files
+Thumbs.db
+Desktop.ini
