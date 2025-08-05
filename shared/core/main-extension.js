@@ -16,36 +16,34 @@ const StreamingRatings = {
      * Sets up platform detection, API service, and DOM observation
      */
     async init() {
-        DEBUG_LOG.log('StreamingRatings: Starting initialization...');
+        LOGGER.group('StreamingRatings Initialization');
+        LOGGER.debug('Starting initialization...');
         
-        // Detect current platform
-        this.platform = PlatformDetector.getCurrentPlatform();
-        if (!this.platform) {
-            DEBUG_LOG.warn('StreamingRatings: Unsupported streaming platform, extension not loaded');
+        // Check if platform is supported
+        const platformData = PlatformDetector.getCurrentPlatform();
+        if (!platformData) {
+            LOGGER.warn('Unsupported platform, exiting');
+            LOGGER.groupEnd();
             return;
         }
-
-        DEBUG_LOG.log(`StreamingRatings: Initialized for ${this.platform.config.name}`);
         
+        this.platform = platformData;
+        LOGGER.debug('Platform detected:', this.platform.config.name);
+        
+        // Initialize API service
         try {
-            // Initialize API service
             await ApiService.init();
-            DEBUG_LOG.log('StreamingRatings: API service initialized');
-            
-            // Set up DOM observation
-            this.setupObserver();
-            DEBUG_LOG.log('StreamingRatings: Observer set up');
-            
-            // Process existing cards after a delay
-            setTimeout(() => {
-                DEBUG_LOG.log('StreamingRatings: Processing existing cards...');
-                this.processExistingCards();
-            }, BASE_CONFIG.OBSERVER_DELAY);
-            
-            DEBUG_LOG.log('StreamingRatings: Initialization complete');
+            LOGGER.debug('API service initialized');
         } catch (error) {
-            DEBUG_LOG.error('StreamingRatings: Initialization failed:', error);
+            LOGGER.error('Failed to initialize API service:', error);
+            LOGGER.groupEnd();
+            return;
         }
+        
+        // Start observing for cards
+        this.startObserver();
+        LOGGER.debug('Initialization complete');
+        LOGGER.groupEnd();
     },
 
     /**
@@ -53,13 +51,13 @@ const StreamingRatings = {
      * Uses debouncing to avoid excessive processing
      */
     setupObserver() {
-        DEBUG_LOG.log('StreamingRatings: Setting up MutationObserver');
+        LOGGER.log('StreamingRatings: Setting up MutationObserver');
         
         const observer = new MutationObserver((mutations) => {
-            DEBUG_LOG.log(`StreamingRatings: DOM mutations detected: ${mutations.length}`);
+            LOGGER.log(`StreamingRatings: DOM mutations detected: ${mutations.length}`);
             clearTimeout(this.debounceTimer);
             this.debounceTimer = setTimeout(() => {
-                DEBUG_LOG.log('StreamingRatings: Processing cards after DOM change');
+                LOGGER.log('StreamingRatings: Processing cards after DOM change');
                 this.processExistingCards();
             }, 1000);
         });
@@ -69,7 +67,7 @@ const StreamingRatings = {
             subtree: true 
         });
         
-        DEBUG_LOG.log('StreamingRatings: MutationObserver active');
+        LOGGER.log('StreamingRatings: MutationObserver active');
     },
 
     /**
@@ -77,12 +75,12 @@ const StreamingRatings = {
      * Finds cards and processes them in batches
      */
     async processExistingCards() {
-        DEBUG_LOG.log('StreamingRatings: Looking for cards to process...');
+        LOGGER.log('StreamingRatings: Processing existing cards...');
         const cards = this.findCards();
-        DEBUG_LOG.log(`StreamingRatings: Found ${cards.length} cards to process`);
+        LOGGER.log(`StreamingRatings: Found ${cards.length} cards to process`);
         
         if (cards.length === 0) {
-            DEBUG_LOG.log('StreamingRatings: No cards found');
+            LOGGER.log('StreamingRatings: No cards found');
             return;
         }
         
@@ -90,7 +88,7 @@ const StreamingRatings = {
         const batchSize = 10;
         for (let i = 0; i < cards.length; i += batchSize) {
             const batch = cards.slice(i, i + batchSize);
-            DEBUG_LOG.log(`StreamingRatings: Processing batch ${Math.floor(i/batchSize) + 1} (${batch.length} cards)`);
+            LOGGER.log(`StreamingRatings: Processing batch ${Math.floor(i/batchSize) + 1}/${Math.ceil(cards.length/batchSize)} (${batch.length} cards)`);
             await this.processBatch(batch);
             
             // Small delay between batches
@@ -98,7 +96,7 @@ const StreamingRatings = {
                 await new Promise(resolve => setTimeout(resolve, 500));
             }
         }
-        DEBUG_LOG.log('StreamingRatings: Finished processing all cards');
+        LOGGER.log('StreamingRatings: Finished processing all cards');
     },
 
     /**

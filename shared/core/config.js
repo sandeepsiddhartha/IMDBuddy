@@ -9,6 +9,7 @@
 // Base Configuration - Core settings for the extension
 const BASE_CONFIG = {
     // Debug settings
+    VERBOSE: true, // Set to false for production
     DEBUG: true, // Set to false for production
     
     // API settings
@@ -32,21 +33,22 @@ const BASE_CONFIG = {
 };
 
 // Debug utility functions
-const DEBUG_LOG = {
-    log: (...args) => {
+const LOGGER = {
+    verbose: (...args) => {
+        if (BASE_CONFIG.VERBOSE) {
+            console.log(`[${BASE_CONFIG.NAME}]`, ...args);
+        }
+    },
+    debug: (...args) => {
         if (BASE_CONFIG.DEBUG) {
             console.log(`[${BASE_CONFIG.NAME}]`, ...args);
         }
     },
     warn: (...args) => {
-        if (BASE_CONFIG.DEBUG) {
-            console.warn(`[${BASE_CONFIG.NAME}]`, ...args);
-        }
+        console.warn(`[${BASE_CONFIG.NAME}]`, ...args);
     },
     error: (...args) => {
-        if (BASE_CONFIG.DEBUG) {
-            console.error(`[${BASE_CONFIG.NAME}]`, ...args);
-        }
+        console.error(`[${BASE_CONFIG.NAME}]`, ...args);
     },
     group: (label) => {
         if (BASE_CONFIG.DEBUG) {
@@ -62,8 +64,8 @@ const DEBUG_LOG = {
 
 // Export for use in other modules
 if (typeof module !== 'undefined' && module.exports) {
-    module.exports = { BASE_CONFIG, DEBUG_LOG };
+    module.exports = { BASE_CONFIG, LOGGER };
 } else {
     window.BASE_CONFIG = BASE_CONFIG;
-    window.DEBUG_LOG = DEBUG_LOG;
+    window.LOGGER = LOGGER;
 }

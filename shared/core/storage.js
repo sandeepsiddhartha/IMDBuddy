@@ -13,14 +13,14 @@ const Storage = {
      * @returns {Promise<Object>} The stored data or empty object
      */
     async get(key) {
-        DEBUG_LOG.log(`Storage: Getting data for key: ${key}`);
+        LOGGER.debug(`Storage: Getting data for key: ${key}`);
         try {
             const result = await chrome.storage.local.get([key]);
             const data = result[key] ? JSON.parse(result[key]) : {};
-            DEBUG_LOG.log(`Storage: Retrieved data for ${key}:`, Object.keys(data).length, 'entries');
+            LOGGER.verbose(`Storage: Retrieved data for ${key}:`, Object.keys(data).length, 'entries');
             return data;
         } catch (error) {
-            DEBUG_LOG.error('Storage get error:', error);
+            LOGGER.error('Storage get error:', error);
             return {};
         }
     },
@@ -32,12 +32,12 @@ const Storage = {
      * @returns {Promise<void>}
      */
     async set(key, data) {
-        DEBUG_LOG.log(`Storage: Setting data for key: ${key}`, Object.keys(data).length, 'entries');
+        LOGGER.debug(`Storage: Setting data for key: ${key}`, Object.keys(data).length, 'entries');
         try {
             await chrome.storage.local.set({ [key]: JSON.stringify(data) });
-            DEBUG_LOG.log(`Storage: Successfully stored data for ${key}`);
+            LOGGER.verbose(`Storage: Successfully stored data for ${key}`);
         } catch (error) {
-            DEBUG_LOG.error('Storage set error:', error);
+            LOGGER.error('Storage set error:', error);
         }
     }
 };

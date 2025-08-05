@@ -14,13 +14,13 @@ const TitleExtractor = {
      * @returns {Object|null} Title data object or null if extraction failed
      */
     extract(element, platformConfig) {
-        DEBUG_LOG.log('TitleExtractor: Attempting extraction from element:', element);
+        LOGGER.verbose('TitleExtractor: Attempting extraction from element:', element);
         const result = platformConfig.extractTitle(element, platformConfig.titleSelectors);
         
         if (result) {
-            DEBUG_LOG.log('TitleExtractor: Successfully extracted:', result);
+            LOGGER.debug('TitleExtractor: Successfully extracted:', result);
         } else {
-            DEBUG_LOG.warn('TitleExtractor: Extraction failed for element');
+            LOGGER.warn('TitleExtractor: Extraction failed for element');
             this.logExtractionFailure(element, platformConfig);
         }
         
@@ -34,9 +34,9 @@ const TitleExtractor = {
      */
     logExtractionFailure(element, platformConfig) {
         const hostname = window.location.hostname;
-        DEBUG_LOG.group(`Title extraction failed for ${hostname}`);
-        DEBUG_LOG.log('Failed element:', element);
-        DEBUG_LOG.log('Platform config:', platformConfig);
+        LOGGER.group(`Title extraction failed for ${hostname}`);
+        LOGGER.debug('Failed element:', element);
+        LOGGER.verbose('Platform config:', platformConfig);
         
         // Platform-specific debug logging
         if (hostname.includes('hotstar.com') || hostname.includes('disneyplus.com')) {
@@ -45,7 +45,7 @@ const TitleExtractor = {
             this.logNetflixDebugInfo(element);
         }
         
-        DEBUG_LOG.groupEnd();
+        LOGGER.groupEnd();
     },
 
     /**
@@ -53,11 +53,11 @@ const TitleExtractor = {
      * @param {HTMLElement} element - The DOM element to analyze
      */
     logHotstarDebugInfo(element) {
-        DEBUG_LOG.log('=== HOTSTAR DEBUG INFO ===');
-        DEBUG_LOG.log('Available aria-label elements:', element.querySelectorAll('[aria-label]'));
-        DEBUG_LOG.log('Available img elements with alt:', element.querySelectorAll('img[alt]'));
-        DEBUG_LOG.log('Available text content:', element.textContent);
-        DEBUG_LOG.log('Element classes:', element.className);
+        LOGGER.verbose('=== HOTSTAR DEBUG INFO ===');
+        LOGGER.verbose('Available aria-label elements:', element.querySelectorAll('[aria-label]'));
+        LOGGER.verbose('Available img elements with alt:', element.querySelectorAll('img[alt]'));
+        LOGGER.verbose('Available text content:', element.textContent);
+        LOGGER.verbose('Element classes:', element.className);
     },
 
     /**
@@ -65,9 +65,9 @@ const TitleExtractor = {
      * @param {HTMLElement} element - The DOM element to analyze
      */
     logNetflixDebugInfo(element) {
-        DEBUG_LOG.log('=== NETFLIX DEBUG INFO ===');
-        DEBUG_LOG.log('Available aria-label links:', element.querySelectorAll('a[aria-label]'));
-        DEBUG_LOG.log('Available fallback text:', element.querySelectorAll('.fallback-text'));
+        LOGGER.verbose('=== NETFLIX DEBUG INFO ===');
+        LOGGER.verbose('Available aria-label links:', element.querySelectorAll('a[aria-label]'));
+        LOGGER.verbose('Available fallback text:', element.querySelectorAll('.fallback-text'));
         DEBUG_LOG.log('Element structure:', element.innerHTML.substring(0, 500));
     }
 };
