@@ -47,17 +47,35 @@ const StreamingRatings = {
     },
 
     /**
+     * Start DOM observation and initial card processing
+     */
+    startObserver() {
+        LOGGER.debug('Starting DOM observation...');
+        
+        // Process existing cards immediately
+        this.processExistingCards();
+        
+        // Set up observer for new content
+        this.setupObserver();
+        
+        // Set up periodic processing (for dynamic content)
+        setTimeout(() => {
+            this.processExistingCards();
+        }, BASE_CONFIG.OBSERVER_DELAY);
+    },
+
+    /**
      * Set up MutationObserver to watch for new content
      * Uses debouncing to avoid excessive processing
      */
     setupObserver() {
-        LOGGER.log('StreamingRatings: Setting up MutationObserver');
+        LOGGER.verbose('StreamingRatings: Setting up MutationObserver');
         
         const observer = new MutationObserver((mutations) => {
-            LOGGER.log(`StreamingRatings: DOM mutations detected: ${mutations.length}`);
+            LOGGER.debug(`StreamingRatings: DOM mutations detected: ${mutations.length}`);
             clearTimeout(this.debounceTimer);
             this.debounceTimer = setTimeout(() => {
-                LOGGER.log('StreamingRatings: Processing cards after DOM change');
+                LOGGER.debug('StreamingRatings: Processing cards after DOM change');
                 this.processExistingCards();
             }, 1000);
         });
@@ -67,7 +85,7 @@ const StreamingRatings = {
             subtree: true 
         });
         
-        LOGGER.log('StreamingRatings: MutationObserver active');
+        LOGGER.debug('StreamingRatings: MutationObserver active');
     },
 
     /**
@@ -75,12 +93,12 @@ const StreamingRatings = {
      * Finds cards and processes them in batches
      */
     async processExistingCards() {
-        LOGGER.log('StreamingRatings: Processing existing cards...');
+        LOGGER.verbose('StreamingRatings: Processing existing cards...');
         const cards = this.findCards();
-        LOGGER.log(`StreamingRatings: Found ${cards.length} cards to process`);
+        LOGGER.debug(`StreamingRatings: Found ${cards.length} cards to process`);
         
         if (cards.length === 0) {
-            LOGGER.log('StreamingRatings: No cards found');
+            LOGGER.debug('StreamingRatings: No cards found');
             return;
         }
         
@@ -88,7 +106,7 @@ const StreamingRatings = {
         const batchSize = 10;
         for (let i = 0; i < cards.length; i += batchSize) {
             const batch = cards.slice(i, i + batchSize);
-            LOGGER.log(`StreamingRatings: Processing batch ${Math.floor(i/batchSize) + 1}/${Math.ceil(cards.length/batchSize)} (${batch.length} cards)`);
+            LOGGER.verbose(`StreamingRatings: Processing batch ${Math.floor(i/batchSize) + 1}/${Math.ceil(cards.length/batchSize)} (${batch.length} cards)`);
             await this.processBatch(batch);
             
             // Small delay between batches
@@ -96,7 +114,7 @@ const StreamingRatings = {
                 await new Promise(resolve => setTimeout(resolve, 500));
             }
         }
-        LOGGER.log('StreamingRatings: Finished processing all cards');
+        LOGGER.verbose('StreamingRatings: Finished processing all cards');
     },
 
     /**
