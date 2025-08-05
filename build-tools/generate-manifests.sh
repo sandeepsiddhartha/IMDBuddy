@@ -59,7 +59,7 @@ jq '{
             strict_min_version: "14.0"
         }
     }
-}' "$SHARED_CONFIG" > build-tools/safari-manifest.json
+}' "$SHARED_CONFIG" > dist/safari-extension/manifest.json
 
 echo "✅ Manifests generated successfully!"
 echo "   - Chrome: dist/chrome-extension/manifest.json"

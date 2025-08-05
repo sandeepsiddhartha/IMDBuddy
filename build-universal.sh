@@ -99,9 +99,13 @@ cp -r "$SHARED_DIR/assets/images" "$SAFARI_DIR/"
 # Copy Safari-specific files
 cp "build-tools/safari-compatibility.js" "$SAFARI_DIR/"
 
-# Copy Safari manifest
-cp "build-tools/safari-manifest.json" "$SAFARI_DIR/manifest.json"
-
+# Verify Safari manifest was generated
+if [ -f "$SAFARI_DIR/manifest.json" ]; then
+    print_success "Safari manifest is ready"
+else
+    print_error "No Safari manifest found! Generate-manifests.sh may have failed"
+    exit 1
+fi
 print_success "Safari extension built in $SAFARI_DIR/"
 
 # Update Safari Xcode project symlinks automatically
