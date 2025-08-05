@@ -2,6 +2,18 @@
 
 This directory contains the Safari Web Extension version of IMDBuddy. Safari extensions require a native macOS app wrapper and must be built using Xcode.
 
+## 🏗️ Modern Build Integration
+
+**Important**: This Safari project now uses **generated files** from the modular build system. The extension files are **automatically synced** with the main build output.
+
+### Build First
+Before opening the Xcode project, always run:
+```bash
+./build-universal.sh
+```
+
+This generates the latest extension files in `dist/safari-extension/` which are automatically linked to the Xcode project.
+
 ## Directory Structure
 
 ```
@@ -15,9 +27,17 @@ Safari-App/
         ├── SafariExtensionViewController.swift # Popup controller
         ├── Info.plist                     # Extension configuration
         ├── safari-compatibility.js        # Safari compatibility layer
-        ├── content.js                     # Main content script
-        ├── styles.css                     # Extension styles
-        ├── popup.html                     # Extension popup
+        ├── content.js          → symlink to dist/safari-extension/content.js
+        ├── styles.css          → symlink to dist/safari-extension/styles.css
+        ├── popup.html          → symlink to dist/safari-extension/popup.html
+        └── images/             → symlink to dist/safari-extension/images/
+```
+
+### 🔗 Symlink Integration
+The Xcode project now uses symbolic links to stay automatically synchronized with the build output:
+- **No manual file copying** needed
+- **Always up-to-date** with latest changes
+- **Single source of truth** from the modular build system
         └── images/                        # Extension icons
 ```
 
