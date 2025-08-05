@@ -95,14 +95,6 @@ This extension complies with:
 - General Data Protection Regulation (GDPR) principles
 - California Consumer Privacy Act (CCPA) requirements
 
-## Contact Information
-
-If you have any questions or concerns about this Privacy Policy or the IMDBuddy extension:
-
-- **Developer**: Pankaj Tanwar
-- **GitHub**: https://github.com/pankajtanwarbanna/IMDBuddy
-- **Issues**: Please report issues through GitHub Issues
-
 ## Data Minimization
 
 IMDBuddy follows the principle of data minimization:
